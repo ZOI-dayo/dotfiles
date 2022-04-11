@@ -116,10 +116,6 @@ let g:netrw_timefmt="%Y/%m/%d(%a) %H:%M:%S"
 " プレビューウィンドウを垂直分割で表示する
 let g:netrw_preview=1
 
-" color
-colorscheme iceberg
-set background=dark
-
 " font
 set guifont=Cica:h12
 set printfont=Cica:h9
@@ -134,6 +130,7 @@ if empty(glob(data_dir . '/autoload/jetpack.vim'))
   autocmd VimEnter * JetpackSync | source $MYVIMRC
 endif
 call jetpack#begin()
+Jetpack 'cocopon/iceberg.vim'
 Jetpack 'vim-jp/vimdoc-ja'
 Jetpack 'markonm/traces.vim'
 Jetpack 'neoclide/coc.nvim', {'branch': 'release'}
@@ -151,6 +148,11 @@ call jetpack#end()
 command Jetpack JetpackSync
 
 command Tree NERDTree
+
+" color
+colorscheme iceberg
+set background=dark
+
 " フォルダアイコンの表示をON
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 
