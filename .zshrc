@@ -125,3 +125,6 @@ alias scrcpy="scrcpy -b 200M"
 # Fig post block. Keep at the bottom of this file.
 eval "$(fig init zsh post)"
 
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

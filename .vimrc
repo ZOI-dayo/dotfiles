@@ -18,6 +18,7 @@ set helplang=ja
 " 見た目系
 " 行番号を表示
 set number
+set numberwidth=3
 " 現在の行を強調表示
 set cursorline
 " 現在の行を強調表示（縦）
@@ -99,9 +100,10 @@ set mouse=a
 set ttymouse=xterm2
 
 " 折り畳み
-set foldcolumn=3
-set foldmethod=syntax
-set foldlevel=2
+set nofoldenable
+set foldcolumn=0
+" set foldmethod=syntax
+" set foldlevel=2
 
 " netrw
 filetype plugin on
@@ -130,7 +132,6 @@ if empty(glob(data_dir . '/autoload/jetpack.vim'))
   autocmd VimEnter * JetpackSync | source $MYVIMRC
 endif
 call jetpack#begin()
-Jetpack 'cocopon/iceberg.vim'
 Jetpack 'vim-jp/vimdoc-ja'
 Jetpack 'markonm/traces.vim'
 Jetpack 'neoclide/coc.nvim', {'branch': 'release'}
@@ -150,8 +151,11 @@ command Jetpack JetpackSync
 command Tree NERDTree
 
 " color
-colorscheme iceberg
+if empty(glob(data_dir . '/colors/iceberg.vim'))
+  silent execute '!curl -fLo '.data_dir.'/colors/iceberg.vim --create-dirs https://raw.githubusercontent.com/cocopon/iceberg.vim/master/colors/iceberg.vim'
+endif
 set background=dark
+colorscheme iceberg
 
 " フォルダアイコンの表示をON
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
