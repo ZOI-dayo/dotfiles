@@ -149,6 +149,7 @@ call jetpack#end()
 command Jetpack JetpackSync
 
 command Tree NERDTree
+let NERDTreeShowHidden=1
 
 " color
 if empty(glob(data_dir . '/colors/iceberg.vim'))
