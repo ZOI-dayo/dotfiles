@@ -118,6 +118,12 @@ let g:netrw_timefmt="%Y/%m/%d(%a) %H:%M:%S"
 " プレビューウィンドウを垂直分割で表示する
 let g:netrw_preview=1
 
+" not allow edit in readonly file
+augroup readonly
+  autocmd!
+  autocmd BufEnter * if &readonly == 1 | set nomodifiable | endif
+augroup END
+
 " font
 set guifont=Cica:h12
 set printfont=Cica:h9
@@ -144,6 +150,7 @@ Jetpack 'udalov/kotlin-vim'
 Jetpack 'w0rp/ale'
 Jetpack 'tpope/vim-fugitive'
 Jetpack 'maximbaz/lightline-ale'
+Jetpack 'zoi-dayo/cheatsheet.vim'
 call jetpack#end()
 
 command Jetpack JetpackSync
