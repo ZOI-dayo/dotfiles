@@ -153,10 +153,12 @@ Jetpack 'w0rp/ale'
 Jetpack 'tpope/vim-fugitive'
 Jetpack 'maximbaz/lightline-ale'
 Jetpack 'zoi-dayo/cheatsheet.vim'
+Jetpack 'Yggdroot/indentLine'
 call jetpack#end()
 
 command Jetpack JetpackSync
 
+" NERDTree
 command Tree NERDTree
 let NERDTreeShowHidden=1
 
@@ -191,6 +193,7 @@ let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 let g:ale_sign_error = ''
 let g:ale_sign_warning = ''
+let g:ale_keep_list_window_open = 1
 let g:lightline.component_expand = {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
@@ -219,3 +222,6 @@ let g:lightline.tab = {
       \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
       \ }
 
+" indentLine
+let g:indentLine_enabled = 1
+let g:indentLine_char = '|'
