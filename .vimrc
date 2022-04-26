@@ -123,13 +123,15 @@ let g:netrw_preview=1
 " not allow edit in readonly file
 augroup readonly
   autocmd!
-  autocmd BufEnter * if &readonly == 1 | set nomodifiable | endif
+  autocmd BufEnter * if &readonly == 1 | set nomodifiable | else | set modifiable | endif
 augroup END
 
 " font
 set guifont=Cica:h12
 set printfont=Cica:h9
 set ambiwidth=double
+
+command Term bo terminal
 
 let g:ale_disable_lsp = 1
 
@@ -146,6 +148,7 @@ Jetpack 'neoclide/coc.nvim', {'branch': 'release'}
 Jetpack 'itchyny/lightline.vim'
 Jetpack 'hallzy/lightline-iceberg'
 Jetpack 'preservim/nerdtree'
+Jetpack 'jistr/vim-nerdtree-tabs'
 Jetpack 'ryanoasis/vim-devicons'
 Jetpack 'mengelbrecht/lightline-bufferline'
 Jetpack 'udalov/kotlin-vim'
@@ -154,13 +157,18 @@ Jetpack 'tpope/vim-fugitive'
 Jetpack 'maximbaz/lightline-ale'
 Jetpack 'zoi-dayo/cheatsheet.vim'
 Jetpack 'Yggdroot/indentLine'
+Jetpack 'tyru/eskk.vim'
 call jetpack#end()
 
 command Jetpack JetpackSync
 
 " NERDTree
-command Tree NERDTree
+" command Tree NERDTree
 let NERDTreeShowHidden=1
+
+" NERDTree-Tabs
+command Tree NERDTreeTabsToggle
+let g:nerdtree_tabs_open_on_console_startup=1
 
 " color
 if empty(glob(data_dir . '/colors/iceberg.vim'))
@@ -178,22 +186,26 @@ let g:lightline = {
       \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
       \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
       \ 'active': {
-      \   'left': [
-      \     ['mode', 'paste'],
-      \     ['readonly', 'filename', 'modified'],
-      \     ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']
-      \   ]
-      \ },
-      \ }
+        \   'left': [
+          \     ['mode', 'paste'],
+          \     ['readonly', 'filename', 'modified'],
+          \     ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']
+          \   ]
+          \ },
+          \ }
 
 " ale
-
 let g:ale_sign_column_always = 1
 let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 let g:ale_sign_error = ''
 let g:ale_sign_warning = ''
 let g:ale_keep_list_window_open = 1
+let g:ale_linters = {
+      \   'cpp' : ['clang']
+      \}
+
+" lightline
 let g:lightline.component_expand = {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
@@ -238,3 +250,23 @@ function! s:vimrc_local(loc)
     source `=i`
   endfor
 endfunction
+
+" eskk
+let g:eskk#directory = "~/.config/eskk"
+let g:eskk#dictionary = { 'path': "~/.config/eskk/SKK-JISYO.S", 'sorted': 1, 'encoding': 'euc-jp',}
+let g:eskk#large_dictionary = {'path': "~/.config/eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp',}
+let g:eskk#kakutei_when_unique_candidate = 1
+let g:eskk#enable_completion = 0
+let g:eskk#no_default_mappings = 1
+let g:eskk#keep_state = 0
+let g:eskk#egg_like_newline = 1
+let g:eskk#marker_henkan = "[変換]"
+let g:eskk#marker_henkan_select = "[選択]"
+let g:eskk#marker_okuri = "[送り]"
+let g:eskk#marker_jisyo_touroku = "[辞書]"
+augroup vimrc_eskk
+  autocmd!
+  autocmd User eskk-enable-post lmap <buffer> l <Plug>(eskk:disable)
+augroup END
+imap jk <Plug>(eskk:toggle)
+cmap jk <Plug>(eskk:toggle)
