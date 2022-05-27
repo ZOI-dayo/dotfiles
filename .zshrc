@@ -1,5 +1,8 @@
 # Fig pre block. Keep at the top of this file.
 . "$HOME/.fig/shell/zshrc.pre.zsh"
+# Show OS Data
+screenfetch -D 'MacOSX'
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -123,6 +126,12 @@ alias scrcpy="scrcpy -b 200M"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+
 # Fig post block. Keep at the bottom of this file.
 . "$HOME/.fig/shell/zshrc.post.zsh"
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+
+# yt-dlp
+alias yt-dlp="yt-dlp --config-location ~/.config/yt-dlp/config"
+alias youtube-dl=yt-dlp
+

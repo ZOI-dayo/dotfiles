@@ -127,7 +127,7 @@ augroup readonly
 augroup END
 
 " font
-set guifont=Cica:h12
+set guifont=Cica:h14
 set printfont=Cica:h9
 set ambiwidth=double
 
@@ -144,7 +144,7 @@ endif
 call jetpack#begin()
 Jetpack 'vim-jp/vimdoc-ja'
 Jetpack 'markonm/traces.vim'
-Jetpack 'neoclide/coc.nvim', {'branch': 'release'}
+" Jetpack 'neoclide/coc.nvim', {'branch': 'release'}
 Jetpack 'itchyny/lightline.vim'
 Jetpack 'hallzy/lightline-iceberg'
 Jetpack 'preservim/nerdtree'
@@ -157,7 +157,22 @@ Jetpack 'tpope/vim-fugitive'
 Jetpack 'maximbaz/lightline-ale'
 Jetpack 'zoi-dayo/cheatsheet.vim'
 Jetpack 'Yggdroot/indentLine'
-Jetpack 'tyru/eskk.vim'
+Jetpack 'thinca/vim-quickrun'
+Jetpack 'mattn/webapi-vim'
+Jetpack 'tyru/open-browser.vim'
+Jetpack 'superbrothers/vim-quickrun-markdown-gfm'
+Jetpack 'digitaltoad/vim-pug'
+Jetpack 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
+Jetpack 'vim-denops/denops.vim'
+Jetpack 'Shougo/ddc.vim'
+Jetpack 'Shougo/ddc-matcher_head'
+Jetpack 'Shougo/ddc-sorter_rank'
+Jetpack 'Shougo/ddc-around'
+Jetpack 'Shougo/ddc-nvim-lsp'
+Jetpack 'LumaKernel/ddc-file'
+Jetpack 'matsui54/ddc-buffer'
+Jetpack 'Shougo/pum.vim'
+Jetpack 'vim-skk/skkeleton'
 call jetpack#end()
 
 command Jetpack JetpackSync
@@ -180,18 +195,41 @@ colorscheme iceberg
 " フォルダアイコンの表示をON
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 
+" Coc
+"function! s:check_back_space() abort
+"  let col = col('.') - 1
+"  return !col || getline('.')[col - 1]  =~ '\s'
+"endfunction
+"
+"inoremap <silent><expr> <Tab>
+"      \ pumvisible() ? "\<C-n>" :
+"      \ <SID>check_back_space() ? "\<Tab>" :
+"      \ coc#refresh()
+"
+"let g:coc_global_extensions = [
+"      \ 'coc-clangd',
+"      \ 'coc-css',
+"      \ 'coc-java',
+"      \ 'coc-json',
+"      \ 'coc-tsserver',
+"      \ 'coc-html',
+"      \ 'coc-vetur',
+"      \ 'coc-prettier',
+"      \ 'coc-eslint',
+"      \ ]
+
 " lightline
 let g:lightline = {
       \ 'colorscheme': 'iceberg',
       \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
       \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
       \ 'active': {
-        \   'left': [
-          \     ['mode', 'paste'],
-          \     ['readonly', 'filename', 'modified'],
-          \     ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']
-          \   ]
-          \ },
+        \ 'left': [
+          \ ['mode', 'paste'],
+          \ ['readonly', 'filename', 'modified'],
+          \ ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']
+          \ ]
+          \ }
           \ }
 
 " ale
@@ -202,21 +240,26 @@ let g:ale_sign_error = ''
 let g:ale_sign_warning = ''
 let g:ale_keep_list_window_open = 1
 let g:ale_linters = {
-      \   'cpp' : ['clang']
-      \}
+      \   'cpp' : ['clang'],
+      \   'vue': ['eslint'],
+      \ }
+let g:ale_linters_explicit = 1 
+let g:ale_disable_lsp = 1
+let g:ale_lint_on_text_changed = 1
+let g:ale_fix_on_save = 1
 
 " lightline
 let g:lightline.component_expand = {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
+      \   'linter_checking': 'lightline#ale#checking',
+      \   'linter_warnings': 'lightline#ale#warnings',
+      \   'linter_errors': 'lightline#ale#errors',
+      \   'linter_ok': 'lightline#ale#ok',
       \ }
 let g:lightline.component_type = {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
+      \   'linter_checking': 'left',
+      \   'linter_warnings': 'warning',
+      \   'linter_errors': 'error',
+      \   'linter_ok': 'left',
       \ }
 let g:lightline#ale#indicator_checking = "\uf110"
 let g:lightline#ale#indicator_infos = "\uf129"
@@ -251,22 +294,124 @@ function! s:vimrc_local(loc)
   endfor
 endfunction
 
-" eskk
-let g:eskk#directory = "~/.config/eskk"
-let g:eskk#dictionary = { 'path': "~/.config/eskk/SKK-JISYO.S", 'sorted': 1, 'encoding': 'euc-jp',}
-let g:eskk#large_dictionary = {'path': "~/.config/eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp',}
-let g:eskk#kakutei_when_unique_candidate = 1
-let g:eskk#enable_completion = 0
-let g:eskk#no_default_mappings = 1
-let g:eskk#keep_state = 0
-let g:eskk#egg_like_newline = 1
-let g:eskk#marker_henkan = "[変換]"
-let g:eskk#marker_henkan_select = "[選択]"
-let g:eskk#marker_okuri = "[送り]"
-let g:eskk#marker_jisyo_touroku = "[辞書]"
-augroup vimrc_eskk
+" ddc
+"function! s:check_back_space() abort
+"  let col = col('.') - 1
+"  return !col || getline('.')[col - 1]  =~ '\s'
+"endfunction
+"
+"inoremap <silent><expr> <Tab>
+"      \ pumvisible() ? "\<C-n>" :
+"      \ <SID>check_back_space() ? "\<Tab>" :
+"      \ coc#refresh()
+"
+"let g:coc_global_extensions = [
+"      \ 'coc-clangd',
+"      \ 'coc-css',
+"      \ 'coc-java',
+"      \ 'coc-json',
+"      \ 'coc-tsserver',
+"      \ 'coc-html',
+"      \ 'coc-vetur',
+"      \ 'coc-prettier',
+"      \ 'coc-eslint',
+call ddc#custom#patch_global('sources', ['around', 'file', 'buffer', 'skkeleton'])
+call ddc#custom#patch_global('sourceOptions', {
+      \ '_': {
+        \ 'matchers': ['matcher_head'],
+        \ 'sorters': ['sorter_rank']
+        \ },
+        \ 'file': {
+          \ 'mark': 'F',
+          \ 'isVolatile': v:true,
+          \ 'forceCompletionPattern': '\S/\S*',
+          \ },
+          \ 'buffer': {'mark': 'B'},
+          \ 'skkeleton': {
+            \     'mark': 'skkeleton',
+            \     'matchers': ['skkeleton'],
+            \     'sorters': []
+            \   },
+            \})
+call ddc#custom#patch_filetype(
+      \ ['ps1', 'dosbatch', 'autohotkey', 'registry'], {
+        \ 'sourceOptions': {
+          \   'file': {
+            \     'forceCompletionPattern': '\S\\\S*',
+            \   },
+            \ }})
+call ddc#custom#patch_global('sourceParams', {
+      \ 'buffer': {
+        \   'requireSameFiletype': v:false,
+        \   'limitBytes': 5000000,
+        \   'fromAltBuf': v:true,
+        \   'forceCollect': v:true,
+        \ },
+        \ })
+call ddc#custom#patch_global('completionMenu', 'pum.vim')
+call ddc#enable()
+
+" vim-quickrun
+let g:quickrun_config = {
+      \   'markdown': {
+        \     'type': 'markdown/gfm',
+        \     'outputter': 'browser'
+        \   }
+        \ }
+
+" pum
+inoremap <silent><expr> <TAB>
+      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+      \ '<TAB>' : ddc#manual_complete()
+inoremap <silent><expr> <S-Tab>  pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' : '<S-Tab>'
+inoremap <silent><expr> <Up>     pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' : '<Up>'
+inoremap <silent><expr> <Down>   pum#visible() ? '<Cmd>call pum#map#select_relative(-1)<CR>' : '<Down>'
+inoremap <silent><expr> <Right>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : '<Right>'
+inoremap <silent><expr> <Left>   pum#visible() ? '<Cmd>call pum#map#cancel()<CR>' : '<Left>'
+inoremap <silent><expr> <Enter>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : '<Enter>'
+
+" skkeleton
+"let g:eskk#directory = "~/.config/eskk"
+"let g:eskk#dictionary = { 'path': "~/.config/eskk/SKK-JISYO.S", 'sorted': 1, 'encoding': 'euc-jp',}
+"let g:eskk#large_dictionary = {'path': "~/.config/eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp',}
+"let g:eskk#kakutei_when_unique_candidate = 1
+"let g:eskk#enable_completion = 0
+"let g:eskk#no_default_mappings = 1
+"let g:eskk#keep_state = 0
+"let g:eskk#egg_like_newline = 1
+"let g:eskk#marker_henkan = "[変換]"
+"let g:eskk#marker_henkan_select = "[選択]"
+"let g:eskk#marker_okuri = "[送り]"
+"let g:eskk#marker_jisyo_touroku = "[辞書]"
+"augroup vimrc_eskk
+"  autocmd!
+"  autocmd User eskk-enable-post lmap <buffer> l <Plug>(eskk:disable)
+"augroup END
+imap jk <Plug>(skkeleton-toggle)
+cmap jk <Plug>(skkeleton-toggle)
+inoremap <silent><expr> <Esc> skkeleton#is_enabled() ? '<Plug>(skkeleton-disable)' : '<Esc>'
+call skkeleton#config({
+      \ 'eggLikeNewline': v:true,
+      \ 'globalJisyo': '~/.skk/SKK-JISYO.L',
+      \ 'registerConvertResult': v:true 
+      \})
+"let g:prev_skkeleton_option={}
+function! g:OnSkkeletonEnable() abort
+  "let g:prev_skkeleton_option=ddc#custom#get_buffer()
+        \ ddc#custom#patch_buffer({
+        \ completionMenu: 'native',
+        \ sources: {'skkeleton'},
+        \ })
+  inoremap <silent><expr> <Up> pum#visible() ? '<S-Tab>' : '<Up>' 
+  inoremap <silent><expr> \<Down> pum#visible() ? '<Tab>' : '<Down>' 
+endfunction
+function! g:OnSkkeletonDisable() abort
+  "ddc#custom#set_buffer(g:prev_skkeleton_option)
+endfunction
+augroup skkeleton-ddc
   autocmd!
-  autocmd User eskk-enable-post lmap <buffer> l <Plug>(eskk:disable)
+  autocmd User skkeleton-enable-pre call g:OnSkkeletonEnable()
+  autocmd User skkeleton-disable-pre call g:OnSkkeletonDisable()
 augroup END
-imap jk <Plug>(eskk:toggle)
-cmap jk <Plug>(eskk:toggle)
+
