@@ -99,7 +99,9 @@ augroup END
 
 "===== マウス設定 =====
 set mouse=a
-set ttymouse=xterm2
+if !has('nvim')
+  set ttymouse=xterm2
+endif
 
 " 折り畳み
 set nofoldenable
@@ -136,7 +138,7 @@ command Term bo terminal
 let g:ale_disable_lsp = 1
 
 " Jetpack
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+let data_dir = has('nvim') ? '~/.config/nvim' : '~/.vim'
 if empty(glob(data_dir . '/autoload/jetpack.vim'))
   silent execute '!curl -fLo '.data_dir.'/autoload/jetpack.vim --create-dirs  https://raw.githubusercontent.com/tani/vim-jetpack/master/autoload/jetpack.vim'
   autocmd VimEnter * JetpackSync | source $MYVIMRC
@@ -168,7 +170,11 @@ Jetpack 'Shougo/ddc.vim'
 Jetpack 'Shougo/ddc-matcher_head'
 Jetpack 'Shougo/ddc-sorter_rank'
 Jetpack 'Shougo/ddc-around'
-Jetpack 'Shougo/ddc-nvim-lsp'
+if has('nvim')
+  Jetpack 'Shougo/ddc-nvim-lsp'
+  Jetpack 'neovim/nvim-lspconfig'
+  Jetpack 'williamboman/nvim-lsp-installer'
+endif
 Jetpack 'LumaKernel/ddc-file'
 Jetpack 'matsui54/ddc-buffer'
 Jetpack 'Shougo/pum.vim'
@@ -365,8 +371,8 @@ inoremap <silent><expr> <TAB>
       \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
       \ '<TAB>' : ddc#manual_complete()
 inoremap <silent><expr> <S-Tab>  pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' : '<S-Tab>'
-inoremap <silent><expr> <Up>     pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' : '<Up>'
-inoremap <silent><expr> <Down>   pum#visible() ? '<Cmd>call pum#map#select_relative(-1)<CR>' : '<Down>'
+inoremap <silent><expr> <Up>     pum#visible() ? '<Cmd>call pum#map#select_relative(-1)<CR>' : '<Up>'
+inoremap <silent><expr> <Down>   pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' : '<Down>'
 inoremap <silent><expr> <Right>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : '<Right>'
 inoremap <silent><expr> <Left>   pum#visible() ? '<Cmd>call pum#map#cancel()<CR>' : '<Left>'
 inoremap <silent><expr> <Enter>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : '<Enter>'
