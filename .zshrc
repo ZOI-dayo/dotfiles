@@ -135,3 +135,5 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 alias yt-dlp="yt-dlp --config-location ~/.config/yt-dlp/config"
 alias youtube-dl=yt-dlp
 
+# NeoVim
+alias gnvim="open -a nvim-qt"

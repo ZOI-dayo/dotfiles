@@ -396,7 +396,9 @@ inoremap <silent><expr> <Enter>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR
 "augroup END
 imap jk <Plug>(skkeleton-toggle)
 cmap jk <Plug>(skkeleton-toggle)
-inoremap <silent><expr> <Esc> skkeleton#is_enabled() ? '<Plug>(skkeleton-disable)' : '<Esc>'
+inoremap <silent><expr> <Esc>  skkeleton#is_enabled() ? '<Plug>(skkeleton-disable)' : '<Esc>'
+" inoremap <silent><expr> <Up>   skkeleton#is_enabled() && pum#visible() ? '<S-Tab>' : '<Up>' 
+" inoremap <silent><expr> <Down> skkeleton#is_enabled() && pum#visible() ? 'a' : '<Down>' 
 call skkeleton#config({
       \ 'eggLikeNewline': v:true,
       \ 'globalJisyo': '~/.skk/SKK-JISYO.L',
@@ -409,8 +411,6 @@ function! g:OnSkkeletonEnable() abort
         \ completionMenu: 'native',
         \ sources: {'skkeleton'},
         \ })
-  inoremap <silent><expr> <Up> pum#visible() ? '<S-Tab>' : '<Up>' 
-  inoremap <silent><expr> \<Down> pum#visible() ? '<Tab>' : '<Down>' 
 endfunction
 function! g:OnSkkeletonDisable() abort
   "ddc#custom#set_buffer(g:prev_skkeleton_option)
