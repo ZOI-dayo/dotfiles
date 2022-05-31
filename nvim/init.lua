@@ -25,8 +25,8 @@ opt.visualbell = true
 opt.showmatch = true
 opt.laststatus = 2
 opt.wildmode = 'list:longest'
-keymap.set('n', 'j', 'gj')
-keymap.set('n', 'k', 'gk')
+keymap.set('n', 'j', 'gj', {silent=true})
+keymap.set('n', 'k', 'gk', {silent=true})
 opt.whichwrap = 'b,s,h,l,<,>,[,],~'
 opt.title = true
 opt.list = true
@@ -76,7 +76,7 @@ opt.ambiwidth = 'double'
 g.ale_disable_lsp = 1
 if not (file_exists('~/.config/nvim/autoload/jetpack.vim')) then
   os.execute('curl -fLo ~/.config/nvim/autoload/jetpack.vim --create-dirs https://raw.githubusercontent.com/tani/vim-jetpack/master/autoload/jetpack.vim')
-  vim.cmd('autocmd VimEnter * JetpackSync | source $MYVIMRC')
+  -- vim.cmd('autocmd VimEnter * JetpackSync | source $MYVIMRC')
 end
 if not (file_exists('~/.config/nvim/lua/jetpack.lua')) then
   os.execute('curl -fLo ~/.config/nvim/lua/jetpack.lua --create-dir https://raw.githubusercontent.com/tani/vim-jetpack/master/lua/jetpack.lua')
@@ -114,132 +114,30 @@ require('jetpack').setup {
   'matsui54/ddc-buffer',
   'Shougo/pum.vim',
   'vim-skk/skkeleton',
-  'j-hui/fidget.nvim',
   {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'},
-  'Shougo/ddx.vim',
   'ntpeters/vim-better-whitespace',
   'lewis6991/gitsigns.nvim',
   'jghauser/mkdir.nvim',
   "SmiteshP/nvim-gps",
-  'akinsho/bufferline.nvim',
+  'j-hui/fidget.nvim',
   'petertriho/nvim-scrollbar'
 }
-vim.cmd('command Jetpack JetpackSync')
-o.NERDTreeShowHidden = 1
+require ('settings.ale')
+require ('settings.ddc')
+require ('settings.lightline')
+-- vim.cmd('command Jetpack JetpackSync')
+vim.cmd("let NERDTreeShowHidden = 1")
 vim.cmd('command! Tree NERDTreeTabsToggle')
 g.nerdtree_tabs_open_on_console_startup = 1
-if not (file_exists('~/.config/nvim/colors/iceberg.vim')) then
+if not(file_exists('~/.config/nvim/colors/iceberg.vim')) then
   os.execute('curl -fLo ~/.config/nvim/colors/iceberg.vim --create-dirs https://raw.githubusercontent.com/cocopon/iceberg.vim/master/colors/iceberg.vim')
 end
 opt.background = 'dark'
 vim.cmd('colorscheme iceberg')
 g.WebDevIconsUnicodeDecorateFolderNodes = 1
-g.lightline = {
-  colorscheme = 'iceberg',
-  separator = {
-    left = "",
-    right = ""
-  },
-  subseparator= {
-    left= "",
-    right= ""
-  },
-  active= {
-    left= {
-      {'mode', 'paste'},
-      {'readonly', 'filename', 'modified'},
-      {'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok'}
-    }
-  }
-}
-
-g.ale_sign_column_always = 1
-g.ale_set_quickfix = 1
-g.ale_open_list = 1
-g.ale_sign_error = ''
-g.ale_sign_warning = ''
-g.ale_keep_list_window_open = 1
-g.ale_linters = {
-  cpp= {'clang'},
-  vue= {'eslint'},
-}
-g.ale_linters_explicit = 1
-g.ale_disable_lsp = 1
-g.ale_lint_on_text_changed = 1
-g.ale_fix_on_save = 1
-
-g.lightline.component_expand = {
-  linter_checking= 'lightline#ale#checking',
-  linter_warnings= 'lightline#ale#warnings',
-  linter_errors= 'lightline#ale#errors',
-  linter_ok= 'lightline#ale#ok',
-}
-g.lightline.component_type = {
-  linter_checking= 'left',
-  linter_warnings= 'warning',
-  linter_errors= 'error',
-  linter_ok= 'left',
-}
-g['lightline#ale#indicator_checking'] = [[\uf110]]
-g['lightline#ale#indicator_infos'] = [[\uf129]]
-g['lightline#ale#indicator_warnings'] = [[\uf071]]
-g['lightline#ale#indicator_errors'] = [[\uf05e]]
-g['lightline#ale#indicator_ok'] = [[\uf00c]]
-
---[[
-if fn.has('gui_running') then
-  opt.guioptions:remove({'e'})
-end
-]]
-
-g.lightline.tab = {
-  active= { 'tabnum', 'filename', 'modified' },
-  inactive= { 'tabnum', 'filename', 'modified' }
-}
 
 g.indentLine_enabled = 1
 g.indentLine_char = '|'
-
-fn["ddc#custom#patch_global"]('sources', {'around', 'file', 'buffer', 'skkeleton', 'nvim-lsp'})
-fn['ddc#custom#patch_global']('sourceOptions', {
-  _= {
-    matchers= {'matcher_head'},
-    sorters= {'sorter_rank'}
-  },
-  file= {
-    mark= 'F',
-    isVolatile= true,
-    forceCompletionPattern= [[\S/\S*]],
-  },
-  buffer= {mark= 'B'},
-  skkeleton= {
-    mark= 'skkeleton',
-    matchers= {'skkeleton'},
-    sorters= {}
-  },
-  ['nvim-lsp']= {
-    mark="L",
-    forceCompletionPattern=[[\.\w*|:\w*|->\w*]],
-    kindLabels = { Class = "c"}
-  }
-})
-fn['ddc#custom#patch_filetype']({'ps1', 'dosbatch', 'autohotkey', 'registry'}, {
-  sourceOptions= {
-    file= {
-      forceCompletionPattern= [[\S\\\S*]],
-    },
-  }
-})
-fn['ddc#custom#patch_global']('sourceParams', {
-  buffer= {
-    requireSameFiletype=false,
-    limitBytes=5000000,
-    fromAltBuf=true,
-    forceCollect=true,
-  },
-})
-fn['ddc#custom#patch_global']('completionMenu', 'pum.vim')
-fn['ddc#enable']()
 
 g.quickrun_config = {
   markdown = {
@@ -258,37 +156,36 @@ keymap.set('i', '<Tab>', function()
       fn['ddc#manual_complete']()
     end
   end
-end)
+end, {silent=true, expr=true})
 keymap.set('i', '<S-Tab>', function()
   if(fn['pum#visible']()) then
     return '<Cmd>call pum#map#insert_relative(-1)<CR>'
   else
     return '<S-Tab>'
   end
-end)
+end, {silent=true, expr=true})
 keymap.set('i', '<Enter>', function()
-  if(fn['pum#visible']()) then
+  if(fn['pum#visible']() == 1) then
     return '<Cmd>call pum#map#confirm()<CR>'
   else
     return '<Enter>'
   end
-end)
-keymap.set({'i','c'}, 'jk', '<Plug>(skkeleton-toggle)', {remap = true})
+end, {silent=true, expr=true})
+keymap.set({'i','c'}, 'jk', '<Plug>(skkeleton-toggle)', {remap = true, silent=true, expr=true})
 keymap.set('i', '<Esc>', function()
   if(fn['skkeleton#is_enabled']()) then
     return '<Plug>(skkeleton-disable)'
   else
     return '<Esc>'
   end
-end)
+end, {silent=true, expr=true})
 fn['skkeleton#config']({
   eggLikeNewline= true,
   globalJisyo= '~/.skk/SKK-JISYO.L',
   registerConvertResult= true
 })
-require("fidget").setup{}
 require('nvim-treesitter.configs').setup {
-  ensure_installed = { "c", "lua", "rust" },
+  ensure_installed = { "all" },
   sync_install = false,
   highlight = {
     enable = true,
@@ -306,14 +203,32 @@ require('nvim-treesitter.configs').setup {
 require('gitsigns').setup()
 require("nvim-gps").setup()
 opt.termguicolors = true
-require("bufferline").setup{}
 require("scrollbar").setup()
 
 require("nvim-lsp-installer").on_server_ready(function(server)
-  server:setup({
-    on_attach = function(client,buffer_number)
-      print(vim.inspect(client))
-      print(buffer_number)
-    end
-  })
+  local opts = {}
+
+  opts.on_attach = function(client,buffer_number)
+    print(vim.inspect(client))
+    print(buffer_number)
+  end
+
+  server:setup(opts)
 end)
+require("nvim-lsp-installer").settings({
+  ui = {
+    icons = {
+      server_installed = '◍',
+      server_pending = '◍',
+      server_uninstalled = '◍',
+    },
+    keymaps = {
+      toggle_server_expand = '<CR>',
+      install_server = 'i',
+      update_server = 'u',
+      uninstall_server = 'x',
+    },
+  },
+})
+require"fidget".setup{}
+
