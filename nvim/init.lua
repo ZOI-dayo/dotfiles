@@ -51,11 +51,6 @@ vim.cmd('autocmd!')
 vim.cmd('autocmd BufEnter * setlocal formatoptions-=r')
 vim.cmd('autocmd BufEnter * setlocal formatoptions-=o')
 vim.cmd('augroup END')
-vim.cmd('augroup MyXML')
-vim.cmd('autocmd!')
-vim.cmd('autocmd Filetype xml inoremap <buffer> </ </<C-x><C-o>')
-vim.cmd('autocmd Filetype html inoremap <buffer> </ </<C-x><C-o>')
-vim.cmd('augroup END')
 opt.mouse = 'a'
 opt.foldenable = false
 opt.foldcolumn = "0"
@@ -71,7 +66,7 @@ vim.cmd('autocmd BufEnter * if &readonly == 1 | set nomodifiable | else | set mo
 vim.cmd('augroup END')
 opt.guifont = 'Cica:h14'
 opt.printfont = 'Cica:h9'
-opt.ambiwidth = 'double'
+-- opt.ambiwidth = 'double'
 -- vim.cmd('command Term bo terminal')
 g.ale_disable_lsp = 1
 if not (file_exists('~/.config/nvim/autoload/jetpack.vim')) then
@@ -120,7 +115,8 @@ require('jetpack').setup {
   'jghauser/mkdir.nvim',
   "SmiteshP/nvim-gps",
   'j-hui/fidget.nvim',
-  'petertriho/nvim-scrollbar'
+  'petertriho/nvim-scrollbar',
+  'delphinus/skkeleton_indicator.nvim'
 }
 require ('settings.ale')
 require ('settings.ddc')
@@ -171,21 +167,23 @@ keymap.set('i', '<Enter>', function()
     return '<Enter>'
   end
 end, {silent=true, expr=true})
-keymap.set({'i','c'}, 'jk', '<Plug>(skkeleton-toggle)', {remap = true, silent=true, expr=true})
-keymap.set('i', '<Esc>', function()
+keymap.set({'i', 'c'}, 'jk', '<Plug>(skkeleton-toggle)')
+fn["skkeleton#register_kanatable"]('rom', {jk = 'disable'})
+--[[ keymap.set('i', '<Esc>', function()
   if(fn['skkeleton#is_enabled']()) then
     return '<Plug>(skkeleton-disable)'
   else
     return '<Esc>'
   end
-end, {silent=true, expr=true})
+end, {expr=true})
+]]
 fn['skkeleton#config']({
   eggLikeNewline= true,
   globalJisyo= '~/.skk/SKK-JISYO.L',
   registerConvertResult= true
 })
 require('nvim-treesitter.configs').setup {
-  ensure_installed = { "all" },
+  ensure_installed = {},
   sync_install = false,
   highlight = {
     enable = true,
@@ -209,8 +207,8 @@ require("nvim-lsp-installer").on_server_ready(function(server)
   local opts = {}
 
   opts.on_attach = function(client,buffer_number)
-    print(vim.inspect(client))
-    print(buffer_number)
+    -- print(vim.inspect(client))
+    -- print(buffer_number)
   end
 
   server:setup(opts)
@@ -231,4 +229,18 @@ require("nvim-lsp-installer").settings({
   },
 })
 require"fidget".setup{}
-
+function _G.disable_arrows()
+  if not (file_exists('/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli')) then return end
+  os.execute([['/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli' --set-variables '{"nvim_enable_arrows": false}']])
+end
+function _G.enable_arrows()
+  if not (file_exists('/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli')) then return end
+  os.execute([['/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli' --set-variables '{"nvim_enable_arrows": true}']])
+end
+vim.cmd("augroup skkeleton_karabiner")
+vim.cmd("  autocmd!")
+vim.cmd("  autocmd VimEnter call v:lua.enable_arrows()")
+vim.cmd("  autocmd User skkeleton-enable-pre call v:lua.disable_arrows()")
+vim.cmd("  autocmd User skkeleton-disable-pre call v:lua.enable_arrows()")
+vim.cmd("augroup END")
+require('skkeleton_indicator').setup{}
