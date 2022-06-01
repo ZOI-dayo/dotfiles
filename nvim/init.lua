@@ -116,7 +116,12 @@ require('jetpack').setup {
   "SmiteshP/nvim-gps",
   'j-hui/fidget.nvim',
   'petertriho/nvim-scrollbar',
-  'delphinus/skkeleton_indicator.nvim'
+  'delphinus/skkeleton_indicator.nvim',
+  'Shougo/ddu.vim',
+  'Shougo/ddu-ui-ff',
+  'Shougo/ddu-kind-file',
+  'Shougo/ddu-source-file_rec',
+  'Shougo/ddu-filter-matcher_substring'
 }
 require ('settings.ale')
 require ('settings.ddc')
@@ -244,3 +249,58 @@ vim.cmd("  autocmd User skkeleton-enable-pre call v:lua.disable_arrows()")
 vim.cmd("  autocmd User skkeleton-disable-pre call v:lua.enable_arrows()")
 vim.cmd("augroup END")
 require('skkeleton_indicator').setup{}
+fn["ddu#custom#patch_global"]({
+  ui= 'ff',
+  sources= {
+    {
+      name= 'file_rec',
+      params= {
+        ignoredDirectories= {'.git', 'node_modules', 'vendor', '.next'}
+      }
+    }
+  },
+  sourceOptions= {
+    ['_']= {
+      matchers= {'matcher_substring'},
+    },
+  },
+  filterParams= {
+    matcher_substring= {
+      highlightMatched= 'Title',
+    },
+  },
+  kindOptions= {
+    file= {
+      defaultAction= 'open',
+    },
+  },
+  uiParams= {
+    ff= {
+      startFilter= true,
+      prompt= '> ',
+      split= 'floating',
+    }
+  },
+})
+fn["ddu#custom#patch_local"]('grep', {
+   uiParams= {
+     ff= {
+       startFilter= false,
+     }
+   },
+ })
+function ddu_my_settings()
+  keymap.set('n', '<CR>', [[<Cmd>call ddu#ui#ff#do_action('itemAction')<CR>]] ,{buffer=true, silent=true})
+  keymap.set('n', '<Space>', [[<Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>]] ,{buffer=true, silent=true})
+  keymap.set('n', 'i', [[<Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>]] ,{buffer=true, silent=true})
+  keymap.set('n', 'q', [[<Cmd>call ddu#ui#ff#do_action('quit')<CR>]] ,{buffer=true, silent=true})
+end
+vim.cmd('autocmd FileType ddu-ff call v:lua.ddu_my_settings()')
+
+function ddu_filter_my_settings()
+  keymap.set('i', '<CR>', [[<Esc><Cmd>close<CR>]] ,{buffer=true, silent=true})
+  keymap.set('n', '<CR>', [[<Cmd>close<CR>]] ,{buffer=true, silent=true})
+  keymap.set('n', 'q', [[<Cmd>close<CR>]] ,{buffer=true, silent=true})
+end
+vim.cmd('autocmd FileType ddu-ff-filter call v:lua.ddu_filter_my_settings()')
+keymap.set('n', ';;', [[<Cmd>call ddu#start({})<CR>]] ,{buffer=true, silent=true})
