@@ -146,38 +146,13 @@ endif
 call jetpack#begin()
 Jetpack 'vim-jp/vimdoc-ja'
 Jetpack 'markonm/traces.vim'
-" Jetpack 'neoclide/coc.nvim', {'branch': 'release'}
 Jetpack 'itchyny/lightline.vim'
 Jetpack 'hallzy/lightline-iceberg'
 Jetpack 'preservim/nerdtree'
 Jetpack 'jistr/vim-nerdtree-tabs'
 Jetpack 'ryanoasis/vim-devicons'
 Jetpack 'mengelbrecht/lightline-bufferline'
-Jetpack 'udalov/kotlin-vim'
-Jetpack 'w0rp/ale'
-Jetpack 'tpope/vim-fugitive'
-Jetpack 'maximbaz/lightline-ale'
-Jetpack 'zoi-dayo/cheatsheet.vim'
 Jetpack 'Yggdroot/indentLine'
-Jetpack 'thinca/vim-quickrun'
-Jetpack 'mattn/webapi-vim'
-Jetpack 'tyru/open-browser.vim'
-Jetpack 'superbrothers/vim-quickrun-markdown-gfm'
-Jetpack 'digitaltoad/vim-pug'
-Jetpack 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
-Jetpack 'vim-denops/denops.vim'
-Jetpack 'Shougo/ddc.vim'
-Jetpack 'Shougo/ddc-matcher_head'
-Jetpack 'Shougo/ddc-sorter_rank'
-Jetpack 'Shougo/ddc-around'
-if has('nvim')
-  Jetpack 'Shougo/ddc-nvim-lsp'
-  Jetpack 'neovim/nvim-lspconfig'
-  Jetpack 'williamboman/nvim-lsp-installer'
-endif
-Jetpack 'LumaKernel/ddc-file'
-Jetpack 'matsui54/ddc-buffer'
-Jetpack 'Shougo/pum.vim'
 Jetpack 'vim-skk/skkeleton'
 call jetpack#end()
 
@@ -201,29 +176,6 @@ colorscheme iceberg
 " フォルダアイコンの表示をON
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 
-" Coc
-"function! s:check_back_space() abort
-"  let col = col('.') - 1
-"  return !col || getline('.')[col - 1]  =~ '\s'
-"endfunction
-"
-"inoremap <silent><expr> <Tab>
-"      \ pumvisible() ? "\<C-n>" :
-"      \ <SID>check_back_space() ? "\<Tab>" :
-"      \ coc#refresh()
-"
-"let g:coc_global_extensions = [
-"      \ 'coc-clangd',
-"      \ 'coc-css',
-"      \ 'coc-java',
-"      \ 'coc-json',
-"      \ 'coc-tsserver',
-"      \ 'coc-html',
-"      \ 'coc-vetur',
-"      \ 'coc-prettier',
-"      \ 'coc-eslint',
-"      \ ]
-
 " lightline
 let g:lightline = {
       \ 'colorscheme': 'iceberg',
@@ -237,22 +189,6 @@ let g:lightline = {
           \ ]
           \ }
           \ }
-
-" ale
-let g:ale_sign_column_always = 1
-let g:ale_set_quickfix = 1
-let g:ale_open_list = 1
-let g:ale_sign_error = ''
-let g:ale_sign_warning = ''
-let g:ale_keep_list_window_open = 1
-let g:ale_linters = {
-      \   'cpp' : ['clang'],
-      \   'vue': ['eslint'],
-      \ }
-let g:ale_linters_explicit = 1 
-let g:ale_disable_lsp = 1
-let g:ale_lint_on_text_changed = 1
-let g:ale_fix_on_save = 1
 
 " lightline
 let g:lightline.component_expand = {
@@ -287,137 +223,12 @@ let g:lightline.tab = {
 let g:indentLine_enabled = 1
 let g:indentLine_char = '|'
 
-" read local vimrc
-augroup vimrc-local
-  autocmd!
-  autocmd BufNewFile,BufReadPost * call s:vimrc_local(expand('<afile>:p:h'))
-augroup END
-
-function! s:vimrc_local(loc)
-  let files = findfile('.vimrc.local', escape(a:loc, ' ') . ';', -1)
-  for i in reverse(filter(files, 'filereadable(v:val)'))
-    source `=i`
-  endfor
-endfunction
-
-" ddc
-"function! s:check_back_space() abort
-"  let col = col('.') - 1
-"  return !col || getline('.')[col - 1]  =~ '\s'
-"endfunction
-"
-"inoremap <silent><expr> <Tab>
-"      \ pumvisible() ? "\<C-n>" :
-"      \ <SID>check_back_space() ? "\<Tab>" :
-"      \ coc#refresh()
-"
-"let g:coc_global_extensions = [
-"      \ 'coc-clangd',
-"      \ 'coc-css',
-"      \ 'coc-java',
-"      \ 'coc-json',
-"      \ 'coc-tsserver',
-"      \ 'coc-html',
-"      \ 'coc-vetur',
-"      \ 'coc-prettier',
-"      \ 'coc-eslint',
-call ddc#custom#patch_global('sources', ['around', 'file', 'buffer', 'skkeleton'])
-call ddc#custom#patch_global('sourceOptions', {
-      \ '_': {
-        \ 'matchers': ['matcher_head'],
-        \ 'sorters': ['sorter_rank']
-        \ },
-        \ 'file': {
-          \ 'mark': 'F',
-          \ 'isVolatile': v:true,
-          \ 'forceCompletionPattern': '\S/\S*',
-          \ },
-          \ 'buffer': {'mark': 'B'},
-          \ 'skkeleton': {
-            \     'mark': 'skkeleton',
-            \     'matchers': ['skkeleton'],
-            \     'sorters': []
-            \   },
-            \})
-call ddc#custom#patch_filetype(
-      \ ['ps1', 'dosbatch', 'autohotkey', 'registry'], {
-        \ 'sourceOptions': {
-          \   'file': {
-            \     'forceCompletionPattern': '\S\\\S*',
-            \   },
-            \ }})
-call ddc#custom#patch_global('sourceParams', {
-      \ 'buffer': {
-        \   'requireSameFiletype': v:false,
-        \   'limitBytes': 5000000,
-        \   'fromAltBuf': v:true,
-        \   'forceCollect': v:true,
-        \ },
-        \ })
-call ddc#custom#patch_global('completionMenu', 'pum.vim')
-call ddc#enable()
-
-" vim-quickrun
-let g:quickrun_config = {
-      \   'markdown': {
-        \     'type': 'markdown/gfm',
-        \     'outputter': 'browser'
-        \   }
-        \ }
-
-" pum
-inoremap <silent><expr> <TAB>
-      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
-      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
-      \ '<TAB>' : ddc#manual_complete()
-inoremap <silent><expr> <S-Tab>  pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' : '<S-Tab>'
-inoremap <silent><expr> <Up>     pum#visible() ? '<Cmd>call pum#map#select_relative(-1)<CR>' : '<Up>'
-inoremap <silent><expr> <Down>   pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' : '<Down>'
-inoremap <silent><expr> <Right>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : '<Right>'
-inoremap <silent><expr> <Left>   pum#visible() ? '<Cmd>call pum#map#cancel()<CR>' : '<Left>'
-inoremap <silent><expr> <Enter>  pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' : '<Enter>'
-
 " skkeleton
-"let g:eskk#directory = "~/.config/eskk"
-"let g:eskk#dictionary = { 'path': "~/.config/eskk/SKK-JISYO.S", 'sorted': 1, 'encoding': 'euc-jp',}
-"let g:eskk#large_dictionary = {'path': "~/.config/eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp',}
-"let g:eskk#kakutei_when_unique_candidate = 1
-"let g:eskk#enable_completion = 0
-"let g:eskk#no_default_mappings = 1
-"let g:eskk#keep_state = 0
-"let g:eskk#egg_like_newline = 1
-"let g:eskk#marker_henkan = "[変換]"
-"let g:eskk#marker_henkan_select = "[選択]"
-"let g:eskk#marker_okuri = "[送り]"
-"let g:eskk#marker_jisyo_touroku = "[辞書]"
-"augroup vimrc_eskk
-"  autocmd!
-"  autocmd User eskk-enable-post lmap <buffer> l <Plug>(eskk:disable)
-"augroup END
 imap jk <Plug>(skkeleton-toggle)
 cmap jk <Plug>(skkeleton-toggle)
 inoremap <silent><expr> <Esc>  skkeleton#is_enabled() ? '<Plug>(skkeleton-disable)' : '<Esc>'
-" inoremap <silent><expr> <Up>   skkeleton#is_enabled() && pum#visible() ? '<S-Tab>' : '<Up>' 
-" inoremap <silent><expr> <Down> skkeleton#is_enabled() && pum#visible() ? 'a' : '<Down>' 
 call skkeleton#config({
       \ 'eggLikeNewline': v:true,
       \ 'globalJisyo': '~/.skk/SKK-JISYO.L',
-      \ 'registerConvertResult': v:true 
+      \ 'registerConvertResult': v:true
       \})
-"let g:prev_skkeleton_option={}
-function! g:OnSkkeletonEnable() abort
-  "let g:prev_skkeleton_option=ddc#custom#get_buffer()
-        \ ddc#custom#patch_buffer({
-        \ completionMenu: 'native',
-        \ sources: {'skkeleton'},
-        \ })
-endfunction
-function! g:OnSkkeletonDisable() abort
-  "ddc#custom#set_buffer(g:prev_skkeleton_option)
-endfunction
-augroup skkeleton-ddc
-  autocmd!
-  autocmd User skkeleton-enable-pre call g:OnSkkeletonEnable()
-  autocmd User skkeleton-disable-pre call g:OnSkkeletonDisable()
-augroup END
-
