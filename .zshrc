@@ -141,4 +141,4 @@ alias gnvim="open -a nvim-qt"
 # lima docker
 export DOCKER_HOST=unix:///${HOME}/.lima/docker/sock/docker.sock
 export PATH="/opt/homebrew/Cellar/docker/20.10.16/bin:$PATH"
-
+alias docker="lima nerdctl"
