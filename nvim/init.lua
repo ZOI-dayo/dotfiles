@@ -5,8 +5,7 @@ local opt = vim.opt
 local keymap = vim.keymap
 local fn = vim.fn
 function file_exists(name)
-  local f=io.open(name,'r')
-  if f~=nil then io.close(f) return true else return false end
+  return fn.empty(fn.glob(path)) == 1
 end
 opt.fenc = 'utf-8'
 opt.backup = false
@@ -121,7 +120,8 @@ require('jetpack').setup {
   'Shougo/ddu-ui-ff',
   'Shougo/ddu-kind-file',
   'Shougo/ddu-source-file_rec',
-  'Shougo/ddu-filter-matcher_substring'
+  'Shougo/ddu-filter-matcher_substring',
+  'Shougo/ddu-source-file_old'
 }
 require ('settings.ale')
 require ('settings.ddc')
@@ -253,7 +253,11 @@ fn["ddu#custom#patch_global"]({
   ui= 'ff',
   sources= {
     {
-      name= 'file_rec',
+      name={{name= 'file_rec', params= {}},
+          {name= 'file'},
+          {name= 'colorscheme'},
+          {name= 'buffer'},
+          {name= 'file_old'}},
       params= {
         ignoredDirectories= {'.git', 'node_modules', 'vendor', '.next'}
       }
@@ -296,11 +300,15 @@ function ddu_my_settings()
   keymap.set('n', 'q', [[<Cmd>call ddu#ui#ff#do_action('quit')<CR>]] ,{buffer=true, silent=true})
 end
 vim.cmd('autocmd FileType ddu-ff call v:lua.ddu_my_settings()')
-
 function ddu_filter_my_settings()
   keymap.set('i', '<CR>', [[<Esc><Cmd>close<CR>]] ,{buffer=true, silent=true})
   keymap.set('n', '<CR>', [[<Cmd>close<CR>]] ,{buffer=true, silent=true})
   keymap.set('n', 'q', [[<Cmd>close<CR>]] ,{buffer=true, silent=true})
 end
 vim.cmd('autocmd FileType ddu-ff-filter call v:lua.ddu_filter_my_settings()')
-keymap.set('n', ';;', [[<Cmd>call ddu#start({})<CR>]] ,{buffer=true, silent=true})
+-- keymap.set('n', ';;', [[<Cmd>call ddu#start({})<CR>]] ,{buffer=true, silent=true})
+keymap.set('n', ';f', [[<Cmd>call ddu#start({'sources': [{'name': 'file_rec'}], 'sourceOptions': {'file_rec': {'path': getcwd()}}})<CR>]] ,{buffer=true, silent=true})
+keymap.set('n', ';h', [[<Cmd>call ddu#start({'sources': [{'name': 'file_old'}]})<CR>]] ,{buffer=true, silent=true})
+
+keymap.set('t', '<ESC>', [[<C-\><C-n>]], {silent=true})
+
