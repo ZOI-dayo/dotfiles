@@ -67,7 +67,7 @@ opt.guifont = 'Cica:h14'
 opt.printfont = 'Cica:h9'
 -- opt.ambiwidth = 'double'
 -- vim.cmd('command Term bo terminal')
-g.ale_disable_lsp = 1
+-- g.ale_disable_lsp = 1
 if not (file_exists('~/.config/nvim/autoload/jetpack.vim')) then
   os.execute('curl -fLo ~/.config/nvim/autoload/jetpack.vim --create-dirs https://raw.githubusercontent.com/tani/vim-jetpack/master/autoload/jetpack.vim')
   -- vim.cmd('autocmd VimEnter * JetpackSync | source $MYVIMRC')
@@ -85,9 +85,9 @@ require('jetpack').setup {
   'ryanoasis/vim-devicons',
   'mengelbrecht/lightline-bufferline',
   'udalov/kotlin-vim',
-  'w0rp/ale',
+  -- 'w0rp/ale',
   'tpope/vim-fugitive',
-  'maximbaz/lightline-ale',
+  -- 'maximbaz/lightline-ale',
   'zoi-dayo/cheatsheet.vim',
   'Yggdroot/indentLine',
   'thinca/vim-quickrun',
@@ -121,15 +121,18 @@ require('jetpack').setup {
   'Shougo/ddu-kind-file',
   'Shougo/ddu-source-file_rec',
   'Shougo/ddu-filter-matcher_substring',
-  'Shougo/ddu-source-file_old'
+  'Shougo/ddu-source-file_old',
+  'ray-x/lsp_signature.nvim',
+  'denops-popup-preview.vim',
+  'denops-signature_help',
 }
-require ('settings.ale')
+-- require ('settings.ale')
 require ('settings.ddc')
 require ('settings.lightline')
 -- vim.cmd('command Jetpack JetpackSync')
 vim.cmd("let NERDTreeShowHidden = 1")
 vim.cmd('command! Tree NERDTreeTabsToggle')
-g.nerdtree_tabs_open_on_console_startup = 1
+g.nerdtree_tabs_open_on_gui_startup = 0
 if not(file_exists('~/.config/nvim/colors/iceberg.vim')) then
   os.execute('curl -fLo ~/.config/nvim/colors/iceberg.vim --create-dirs https://raw.githubusercontent.com/cocopon/iceberg.vim/master/colors/iceberg.vim')
 end
@@ -207,6 +210,11 @@ require('gitsigns').setup()
 require("nvim-gps").setup()
 opt.termguicolors = true
 require("scrollbar").setup()
+
+keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
 
 require("nvim-lsp-installer").on_server_ready(function(server)
   local opts = {}
@@ -311,4 +319,8 @@ keymap.set('n', ';f', [[<Cmd>call ddu#start({'sources': [{'name': 'file_rec'}], 
 keymap.set('n', ';h', [[<Cmd>call ddu#start({'sources': [{'name': 'file_old'}]})<CR>]] ,{buffer=true, silent=true})
 
 keymap.set('t', '<ESC>', [[<C-\><C-n>]], {silent=true})
+
+-- require "lsp_signature".setup({})
+fn["signature_help#enable"]()
+fn["popup_preview#enable"]()
 

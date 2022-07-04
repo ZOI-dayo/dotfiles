@@ -1,7 +1,8 @@
 # Fig pre block. Keep at the top of this file.
-. "$HOME/.fig/shell/zshrc.pre.zsh"
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
+
 # Show OS Data
-screenfetch -D 'MacOSX'
+# screenfetch -D 'MacOSX'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -128,17 +129,23 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 
-# Fig post block. Keep at the bottom of this file.
-. "$HOME/.fig/shell/zshrc.post.zsh"
-
 # yt-dlp
 alias yt-dlp="yt-dlp --config-location ~/.config/yt-dlp/config"
 alias youtube-dl=yt-dlp
 
 # NeoVim
-alias gnvim="open -a nvim-qt"
+alias gnvim="goneovim"
+alias ngvim="gnvim"
 
 # lima docker
 export DOCKER_HOST=unix:///${HOME}/.lima/docker/sock/docker.sock
-export PATH="/opt/homebrew/Cellar/docker/20.10.16/bin:$PATH"
-alias docker="lima nerdctl"
+# DOCKER_VERSION=`ls /opt/homebrew/Cellar/docker/ | sort --version-sort | head -n 1`
+# export PATH="/opt/homebrew/Cellar/docker/$DOCKER_VERSION/bin:$PATH"
+alias docker="lima docker"
+alias act="lima sudo act"
+export LIMA_INSTANCE="docker"
+
+# alias act="act --container-architecture linux/amd64"
+
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
