@@ -3,4 +3,5 @@
 autoload
 colors
 lua/jetpack.lua
+nvim/plugin/jetpack.vim
 

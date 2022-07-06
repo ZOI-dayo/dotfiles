@@ -5,7 +5,7 @@ local opt = vim.opt
 local keymap = vim.keymap
 local fn = vim.fn
 function file_exists(name)
-  return fn.empty(fn.glob(path)) == 1
+  return fn.filereadable(path) ~= false
 end
 opt.fenc = 'utf-8'
 opt.backup = false
@@ -68,13 +68,15 @@ opt.printfont = 'Cica:h9'
 -- opt.ambiwidth = 'double'
 -- vim.cmd('command Term bo terminal')
 -- g.ale_disable_lsp = 1
-if not (file_exists('~/.config/nvim/autoload/jetpack.vim')) then
-  os.execute('curl -fLo ~/.config/nvim/autoload/jetpack.vim --create-dirs https://raw.githubusercontent.com/tani/vim-jetpack/master/autoload/jetpack.vim')
+if not (file_exists('~/.config/nvim/plugin/jetpack.vim')) then
+  os.execute('curl -fLo ~/.config/nvim/plugin/jetpack.vim --create-dirs https://raw.githubusercontent.com/tani/vim-jetpack/master/plugin/jetpack.vim')
   -- vim.cmd('autocmd VimEnter * JetpackSync | source $MYVIMRC')
 end
-if not (file_exists('~/.config/nvim/lua/jetpack.lua')) then
+--[[ if not (file_exists('~/.config/nvim/lua/jetpack.lua')) then
   os.execute('curl -fLo ~/.config/nvim/lua/jetpack.lua --create-dir https://raw.githubusercontent.com/tani/vim-jetpack/master/lua/jetpack.lua')
 end
+]]
+vim.cmd("runtime */jetpack.vim")
 require('jetpack').setup {
   'vim-jp/vimdoc-ja',
   'markonm/traces.vim',
@@ -123,8 +125,8 @@ require('jetpack').setup {
   'Shougo/ddu-filter-matcher_substring',
   'Shougo/ddu-source-file_old',
   'ray-x/lsp_signature.nvim',
-  'denops-popup-preview.vim',
-  'denops-signature_help',
+  -- 'denops-popup-preview.vim',
+  -- 'denops-signature_help',
 }
 -- require ('settings.ale')
 require ('settings.ddc')
@@ -321,6 +323,6 @@ keymap.set('n', ';h', [[<Cmd>call ddu#start({'sources': [{'name': 'file_old'}]})
 keymap.set('t', '<ESC>', [[<C-\><C-n>]], {silent=true})
 
 -- require "lsp_signature".setup({})
-fn["signature_help#enable"]()
-fn["popup_preview#enable"]()
+-- fn["signature_help#enable"]()
+-- fn["popup_preview#enable"]()
 
