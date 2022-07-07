@@ -29,7 +29,7 @@ keymap.set('n', 'k', 'gk', {silent=true})
 opt.whichwrap = 'b,s,h,l,<,>,[,],~'
 opt.title = true
 opt.list = true
-opt.listchars = 'tab:▸-'
+opt.listchars = 'tab:▸-,space:･'
 opt.expandtab = true
 opt.tabstop = 2
 opt.shiftwidth = 2
@@ -65,7 +65,8 @@ vim.cmd('autocmd BufEnter * if &readonly == 1 | set nomodifiable | else | set mo
 vim.cmd('augroup END')
 opt.guifont = 'Cica:h14'
 opt.printfont = 'Cica:h9'
--- opt.ambiwidth = 'double'
+keymap.set('i', '<C-v>u', '<C-r>=nr2char(0x)<Left>', {remap = true})
+opt.ambiwidth = 'double'
 -- vim.cmd('command Term bo terminal')
 -- g.ale_disable_lsp = 1
 if not (file_exists('~/.config/nvim/plugin/jetpack.vim')) then
@@ -127,6 +128,8 @@ require('jetpack').setup {
   'ray-x/lsp_signature.nvim',
   -- 'denops-popup-preview.vim',
   -- 'denops-signature_help',
+  'vim-scripts/sudo.vim',
+  -- 'ueokande/popupdict.vim',
 }
 -- require ('settings.ale')
 require ('settings.ddc')
@@ -325,4 +328,6 @@ keymap.set('t', '<ESC>', [[<C-\><C-n>]], {silent=true})
 -- require "lsp_signature".setup({})
 -- fn["signature_help#enable"]()
 -- fn["popup_preview#enable"]()
+
+-- api.nvim_create_user_command('Dict', function() g.popup_enabled = -g.popup_enabled + 1 end, {nargs = 1})
 
