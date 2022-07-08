@@ -4,8 +4,8 @@ local o = vim.o
 local opt = vim.opt
 local keymap = vim.keymap
 local fn = vim.fn
-function file_exists(name)
-  return fn.filereadable(path) ~= false
+function file_exists(path)
+  return fn.filereadable(fn.expand(path)) ~= 0
 end
 opt.fenc = 'utf-8'
 opt.backup = false
