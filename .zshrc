@@ -1,6 +1,5 @@
 # Fig pre block. Keep at the top of this file.
-[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
-
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
 # Show OS Data
 # screenfetch -D 'MacOSX'
 
@@ -39,10 +38,6 @@ fi
 # jenv
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
-
-# nodenv
-export PATH="$HOME/.nodenv/bin:$PATH"
-eval "$(nodenv init -)"
 
 # apk
 export PATH=$PATH:/Users/zoi/Library/Android/sdk/platform-tools
@@ -138,14 +133,61 @@ alias gnvim="goneovim"
 alias ngvim="gnvim"
 
 # lima docker
-export DOCKER_HOST=unix:///${HOME}/.lima/docker/sock/docker.sock
+# export DOCKER_HOST=unix:///${HOME}/.lima/docker/sock/docker.sock
 # DOCKER_VERSION=`ls /opt/homebrew/Cellar/docker/ | sort --version-sort | head -n 1`
 # export PATH="/opt/homebrew/Cellar/docker/$DOCKER_VERSION/bin:$PATH"
-alias docker="lima docker"
-alias act="lima sudo act"
-export LIMA_INSTANCE="docker"
+# alias docker="lima sudo  docker"
+# alias act="lima sudo act"
+# export LIMA_INSTANCE="docker"
 
 # alias act="act --container-architecture linux/amd64"
 
+export QT_DIR=~/Qt
+export QT_VERSION=5.14.2
+export QT_API=5.13.0
+
+export GOPATH=~/go
+
+export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib"
+
+# alias clang++="clang++ --sysroot=$(xcrun --sdk macosx --show-sdk-path)"
+
+# nodenv
+export PATH="$HOME/.nodenv/bin:$PATH"
+eval "$(nodenv init -)"
+
+alias sed='gsed'
+
+eval "$(direnv hook zsh)"
+
+# AtCoder Compiler
+alias g++-atcoder='g++ -I ~/Documents/AtCoder/include -std=c++17 -O0 -g -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG'
+alias g++-atcoder-fast='g++ -I ~/Documents/AtCoder/include -std=c++17 -O0 -g'
+alias oj-test='g++-atcoder-fast main.cpp && oj t -e 1e-6'
+alias acc-submit='acc s -s -- --no-open --yes'
+alias acc-check-submit='oj-test && acc-submit'
+
+# iTerm2
+alias chprof='(){echo -e "\033]1337;SetProfile=$1\a"}'
+alias otaku='chprof Otaku'
+
+image_list=($(ls -d ~/Documents/Image/StableDiffusion/*))
+image_count=$(ls -F ~/Documents/Image/StableDiffusion/ | grep -v / | wc -l | sed -e "s/ //g")
+image_index=1
+bg() {
+  if test $image_index -eq $image_count; then
+    image_index=1
+  else
+    image_index=$(( $image_index + 1 ))
+  fi
+  echo $image_count
+  image_path=$image_list[$image_index]
+  base64=$(echo "$image_path" | sed -e "s/ /\\\\ /g" | base64)
+  echo -ne "\033]1337;SetBackgroundImageFile=${base64}\a"
+}
+alias otaku-toggle=bg
+
 # Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"

@@ -12,11 +12,33 @@ g.lightline = {
   active = {
     left = {
       {'mode', 'paste'},
+      {'lsp_info', 'lsp_hints', 'lsp_errors', 'lsp_warnings', 'lsp_ok' }, { 'lsp_status' },
       {'readonly', 'filename', 'modified'},
-      {'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok'}
+      {'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok'},
     }
+  },
+  tab_component_function= {
+    tabnum= 'LightlineWebDevIcons',
+  },
+  --[[
+  tabline = {
+    left = {{'buffers'}},
+    right = {{'close'}}
+  },
+  component_expand = {
+    buffers = 'lightline#bufferline#buffers'
+  },
+  component_type = {
+    buffers = 'tabsel'
   }
+  ]]
 }
+vim.cmd([[
+function! LightlineWebDevIcons(n)
+  let l:bufnr = tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]
+  return WebDevIconsGetFileTypeSymbol(bufname(l:bufnr))
+endfunction
+]])
 
 g.lightline.component_expand = {
   linter_checking = 'lightline#ale#checking',
@@ -30,11 +52,25 @@ g.lightline.component_type = {
   linter_errors = 'error',
   linter_ok = 'left',
 }
-g['lightline#ale#indicator_checking'] = [[\uf110]]
-g['lightline#ale#indicator_infos'] = [[\uf129]]
-g['lightline#ale#indicator_warnings'] = [[\uf071]]
-g['lightline#ale#indicator_errors'] = [[\uf05e]]
-g['lightline#ale#indicator_ok'] = [[\uf00c]]
+
+--[[
+g.lightline.component_raw = { buffers = 1 }
+g['lightline#bufferline#unicode_symbols'] = 1
+g['lightline#bufferline#enable_devicons'] = 1
+g['lightline#bufferline#enable_nerdfont'] = 1
+]]
+-- g['lightline#ale#indicator_checking'] = [[\uf110]]
+-- g['lightline#ale#indicator_infos'] = [[\uf129]]
+-- g['lightline#ale#indicator_warnings'] = [[\uf071]]
+-- g['lightline#ale#indicator_errors'] = [[\uf05e]]
+-- g['lightline#ale#indicator_ok'] = [[\uf00c]]
+
+g['lightline#lsp#indicator_warnings'] = ''
+g['lightline#lsp#indicator_errors'] = ''
+g['lightline#lsp#indicator_info'] = ''
+g['lightline#lsp#indicator_hints'] = ''
+g['lightline#lsp#indicator_ok'] = '﫠'
+vim.cmd("call lightline#lsp#register()");
 
 --[[
 if fn.has('gui_running') then
@@ -42,8 +78,10 @@ if fn.has('gui_running') then
 end
 ]]
 
+--[[
 g.lightline.tab = {
   active= { 'tabnum', 'filename', 'modified' },
   inactive= { 'tabnum', 'filename', 'modified' }
 }
+]]
 
