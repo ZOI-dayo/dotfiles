@@ -1,4 +1,15 @@
 local g = vim.g
+
+vim.cmd([[
+function L_eskk_get_mode()
+    if (mode() == 'i') && eskk#is_enabled()
+        return g:eskk#statusline()
+    else
+        return ''
+    endif
+endfunction
+]])
+
 g.lightline = {
   colorscheme = 'iceberg',
   separator = {
@@ -13,9 +24,12 @@ g.lightline = {
     left = {
       {'mode', 'paste'},
       {'lsp_info', 'lsp_hints', 'lsp_errors', 'lsp_warnings', 'lsp_ok' }, { 'lsp_status' },
-      {'readonly', 'filename', 'modified'},
+      {'readonly', 'filename', 'eskk', 'modified'},
       {'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok'},
     }
+  },
+  component_function = {
+     eskk = 'L_eskk_get_mode',
   },
   tab_component_function= {
     tabnum= 'LightlineWebDevIcons',

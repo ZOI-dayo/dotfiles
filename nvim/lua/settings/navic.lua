@@ -29,7 +29,6 @@ end
 -- vim.opt.statusline = "%{%v:lua.require'settings.navic'.eval()%}"
 -- vim.cmd([[eval"%{%v:lua.require'settings.navic'.eval()%}"]])
 
---[[
 
 navic.setup {
   icons = {
@@ -73,5 +72,5 @@ vim.o.statusline = "%{%v:lua.require'nvim-navic'.get_location()%}"
 --  OR
 -- vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
 
-]]
+
 return M

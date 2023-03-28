@@ -148,8 +148,8 @@ export QT_API=5.13.0
 
 export GOPATH=~/go
 
-export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+# export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
 export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib"
 
 # alias clang++="clang++ --sysroot=$(xcrun --sdk macosx --show-sdk-path)"
@@ -163,8 +163,8 @@ alias sed='gsed'
 eval "$(direnv hook zsh)"
 
 # AtCoder Compiler
-alias g++-atcoder='g++ -I ~/Documents/AtCoder/include -std=c++17 -O0 -g -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG'
-alias g++-atcoder-fast='g++ -I ~/Documents/AtCoder/include -std=c++17 -O0 -g'
+alias      g++-atcoder='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g -Wall -Wextra -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG'
+alias g++-atcoder-fast='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g'
 alias oj-test='g++-atcoder-fast main.cpp && oj t -e 1e-6'
 alias acc-submit='acc s -s -- --no-open --yes'
 alias acc-check-submit='oj-test && acc-submit'
@@ -188,6 +188,9 @@ bg() {
   echo -ne "\033]1337;SetBackgroundImageFile=${base64}\a"
 }
 alias otaku-toggle=bg
+
+# deta.space
+export PATH="/Users/zoi/.detaspace/bin:$PATH"
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
