@@ -8,6 +8,16 @@ function L_eskk_get_mode()
         return ''
     endif
 endfunction
+
+function L_filepath()
+  let l:file = expand('%:p')
+  if l:file == ''
+    return ''
+  endif
+  let l:home = expand('$HOME')
+  let l:file = substitute(l:file, l:home, '~', '')
+  return l:file
+endfunction
 ]])
 
 g.lightline = {
@@ -30,6 +40,7 @@ g.lightline = {
   },
   component_function = {
      eskk = 'L_eskk_get_mode',
+     filename = 'L_filepath',
   },
   tab_component_function= {
     tabnum= 'LightlineWebDevIcons',

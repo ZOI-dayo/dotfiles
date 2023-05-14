@@ -163,9 +163,16 @@ alias sed='gsed'
 eval "$(direnv hook zsh)"
 
 # AtCoder Compiler
-alias      g++-atcoder='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g -Wall -Wextra -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG'
-alias g++-atcoder-fast='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g'
-alias oj-test='g++-atcoder-fast main.cpp && oj t -e 1e-6'
+# alias      g++-atcoder='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g -Wall -Wextra -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG
+# alias g++-atcoder-fast='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g'
+function g++-atcoder() {
+compile_flags="`acc config-dir`/cpp/compile_flags.txt"
+if [ -f ./compile_flags.txt ]; then
+  compile_flags="./compile_flags.txt"
+fi
+cat $compile_flags | xargs g++ $1
+}
+alias oj-test='g++-atcoder main.cpp && oj t -e 1e-6'
 alias acc-submit='acc s -s -- --no-open --yes'
 alias acc-check-submit='oj-test && acc-submit'
 
