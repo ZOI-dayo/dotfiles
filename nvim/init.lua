@@ -61,19 +61,16 @@ opt.wrapscan = true
 opt.hlsearch = true
 keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><ESC>', {remap = true})
 opt.clipboard = 'unnamed'
-vim.cmd('augroup source-vimrc')
-vim.cmd('autocmd!')
-vim.cmd('autocmd BufWritePost *vimrc source $MYVIMRC | set foldmethod=marker')
-vim.cmd('autocmd BufWritePost *gvimrc if has("gui_running") source $MYGVIMRC')
-vim.cmd('augroup END')
 vim.cmd('augroup auto_comment_off')
 vim.cmd('autocmd!')
-vim.cmd('autocmd BufEnter * setlocal formatoptions-=r')
+-- vim.cmd('autocmd BufEnter * setlocal formatoptions-=r')
 vim.cmd('autocmd BufEnter * setlocal formatoptions-=o')
 vim.cmd('augroup END')
 opt.mouse = 'a'
 opt.foldenable = false
-opt.foldcolumn = "0"
+-- opt.foldcolumn = "0"
+opt.foldmethod = "expr"
+opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.cmd('filetype plugin on')
 
 --[[
@@ -89,14 +86,10 @@ vim.cmd('autocmd!')
 vim.cmd('autocmd BufEnter * if &readonly == 1 | set nomodifiable | else | set modifiable | endif')
 vim.cmd('augroup END')
 opt.guifont = 'Cica:h14'
-opt.printfont = 'Cica:h9'
+-- opt.printfont = 'Cica:h9'
 keymap.set('i', '<C-v>u', '<C-r>=nr2char(0x)<Left>', {remap = true})
 keymap.set('v', 'x', '"_x')
 keymap.set('n', 'x', '"_x')
-vim.cmd('augroup cd-on-start')
-vim.cmd('autocmd!')
-vim.cmd([[autocmd VimEnter * execute ":cd ".fnamemodify(substitute(expand("%"), ".*file:\\\/\\\/\\|\\$$", "", "g"), ":p:h")]])
-vim.cmd('augroup END')
 keymap.set('n', '<S-Left>', '<C-w><<CR>')
 keymap.set('n', '<S-Right>', '<C-w>><CR>')
 keymap.set('n', '<S-Up>', '<C-w>-<CR>')
@@ -105,11 +98,19 @@ keymap.set('n', '<S-Down>', '<C-w>+<CR>')
 opt.undodir = vim.env.HOME .. "/.vim/undo"
 opt.undofile = true
 
+
+api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    -- print(require("telescope.actions"))
+    require("telescope").extensions.recent_files.pick(require('telescope.themes').get_dropdown())
+  end
+})
+
 if g.neovide then
   g.mapleader = "¥"
   -- Helper function for transparency formatting
   local alpha = function()
-    return string.format("%x", math.floor(255 * g.neovide_transparency_point or 0.8))
+    return string.format("%x", math.floor((255 * g.neovide_transparency_point) or 0.8))
   end
   -- g:neovide_transparency should be 0 if you want to unify transparency of content and title bar.
   g.neovide_transparency = 0.0
@@ -147,11 +148,74 @@ end
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- {'tani/vim-jetpack', opt = 1},
+  'cocopon/iceberg.vim',
   'vim-jp/vimdoc-ja',
   'markonm/traces.vim',
+  --[[
   'itchyny/lightline.vim',
-  {'hallzy/lightline-iceberg', dependencies='lightline.vim'},
+  {'hallzy/lightline-iceberg', dependencies={'lightline.vim', 'iceberg.vim'}},
   'josa42/nvim-lightline-lsp',
+  {'mengelbrecht/lightline-bufferline', dependencies='lightline.vim'},
+  ]]
+  {'nvim-lualine/lualine.nvim',
+    dependencies={'nvim-web-devicons', 'iceberg.vim'},
+    config=function()
+      local function eskk()
+        if(api.nvim_get_mode().mode == 'i' and fn['eskk#is_enabled']() == 1) then
+          return fn['eskk#statusline']()
+        else
+          return ''
+        end
+      end
+      require('lualine').setup {
+        options = {
+          icons_enabled = true,
+          theme = 'iceberg',
+          component_separators = { left = '', right = ''},
+          section_separators = { left = '', right = ''},
+          disabled_filetypes = {
+            statusline = {},
+            winbar = {},
+          },
+          ignore_focus = {},
+          always_divide_middle = true,
+          globalstatus = true,
+          refresh = {
+            statusline = 1000,
+            tabline = 1000,
+            winbar = 1000,
+          }
+        },
+        sections = {
+          lualine_a = {'mode', eskk},
+          lualine_b = {'branch', 'diff', 'diagnostics'},
+          lualine_c = {'filename'},
+          lualine_x = {'encoding', 'fileformat', 'filetype'},
+          lualine_y = {'progress'},
+          lualine_z = {'location'}
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {'filename'},
+          lualine_x = {'location'},
+          lualine_y = {},
+          lualine_z = {}
+        },
+        tabline = {
+          lualine_a = {'buffers'},
+          lualine_b = {},
+          lualine_c = {},
+          lualine_x = {},
+          lualine_y = {},
+          lualine_z = {}
+        },
+        winbar = {},
+        inactive_winbar = {},
+        extensions = {}
+      }
+    end
+  },
   -- 'preservim/nerdtree',
   -- {'jistr/vim-nerdtree-tabs', dependencies='nerdtree'},
   'lambdalisue/nerdfont.vim',
@@ -170,7 +234,6 @@ require('lazy').setup({
   'lambdalisue/fern-git-status.vim',
   'ryanoasis/vim-devicons',
   'nvim-tree/nvim-web-devicons',
-  {'mengelbrecht/lightline-bufferline', dependencies='lightline.vim'},
   -- 'udalov/kotlin-vim',
   -- 'w0rp/ale',
   -- 'tpope/vim-fugitive', -- git
@@ -200,20 +263,20 @@ require('lazy').setup({
   {'williamboman/mason-lspconfig.nvim', dependencies={'mason.nvim', 'nvim-lspconfig'}},
   --[[
   {'Shougo/pum.vim', config=function()
-    keymap.set('i', '<Up>', function()
-      if(fn['pum#visible']()) then
-        return '<Cmd>call pum#close()<CR><Up>'
-      else
-        return '<Up>'
-      end
-    end, {silent=true, expr=true})
-    keymap.set('i', '<Down>', function()
-      if(fn['pum#visible']()) then
-        return '<Cmd>call pum#close()<CR><Down>'
-      else
-        return '<Down>'
-      end
-    end, {silent=true, expr=true})
+  keymap.set('i', '<Up>', function()
+  if(fn['pum#visible']()) then
+  return '<Cmd>call pum#close()<CR><Up>'
+  else
+  return '<Up>'
+  end
+  end, {silent=true, expr=true})
+  keymap.set('i', '<Down>', function()
+  if(fn['pum#visible']()) then
+  return '<Cmd>call pum#close()<CR><Down>'
+  else
+  return '<Down>'
+  end
+  end, {silent=true, expr=true})
   end},
   ]]
   'hrsh7th/cmp-nvim-lsp',
@@ -246,7 +309,77 @@ require('lazy').setup({
   -- 'ueokande/popupdict.vim',
   'github/copilot.vim',
   'nvim-lua/plenary.nvim',
-  {'nvim-telescope/telescope.nvim', dependencies='plenary.nvim'},
+  {'nvim-telescope/telescope.nvim',
+  dependencies={
+    'plenary.nvim',
+    'debugloop/telescope-undo.nvim',
+    'telescope-fzf-native.nvim'
+  }, config=function()
+    local themes = require("telescope.themes")
+    require("telescope").setup(
+    themes.get_ivy({
+      defaults = {
+        selection_caret = "  ",
+        file_ignore_patterns = { "node_modules/.*", "Library/.*", ".cache/.*", ".vscode/.*", ".git/.*", "ios/Runner/.*", "Xcode/.*", "%.png", "%.PNG", "%.jpeg", "%.jpg", ".*/venv/.*", ".DS_Store", ".*/tmp/.*", "%.class"}
+      },
+      extensions = {
+        undo = {
+          use_delta = true,
+          use_custom_command = nil,
+          side_by_side = false,
+          diff_context_lines = vim.o.scrolloff,
+          entry_format = "state #$ID, $STAT, $TIME",
+          mappings = {
+            i = {
+              ["<cr>"] = require("telescope-undo.actions").yank_additions,
+              ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+              ["<C-cr>"] = require("telescope-undo.actions").restore,
+            },
+          },
+        },
+        fzf = {
+          fuzzy = true,
+          override_generic_sorter = false,
+          override_file_sorter = true,
+          case_mode = "smart_case",
+        },
+        recent_files = {
+          attach_mappings = function(prompt_bufnr, _)
+            local actions = require("telescope.actions")
+            local action_state = require("telescope.actions.state")
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selection = action_state.get_selected_entry()
+              local bufinfo = vim.fn.getbufinfo({buflisted = 1})
+              local src_buf_name = api.nvim_buf_get_name(0)
+              vim.cmd("e " .. selection[1])
+              if (src_buf_name == '') then
+                if (#bufinfo == 1) then
+                  vim.cmd([[execute ":cd ".fnamemodify(substitute(expand("%"), ".*file:\\\/\\\/\\|\\$$", "", "g"), ":p:h")]])
+                else
+                  vim.cmd([[execute ":lcd ".fnamemodify(substitute(expand("%"), ".*file:\\\/\\\/\\|\\$$", "", "g"), ":p:h")]])
+                end
+              end
+            end)
+            return true
+          end,
+        },
+      }
+    })
+    )
+    require('telescope').load_extension('undo')
+    require("telescope").load_extension('fzf')
+
+    local builtin = require('telescope.builtin')
+    keymap.set('n', '<leader>ff', builtin.find_files, {})
+    keymap.set('n', '<leader>fg', builtin.live_grep, {})
+    keymap.set('n', '<leader>fb', builtin.buffers, {})
+    keymap.set('n', '<leader>fh', builtin.help_tags, {})
+    keymap.set('n', '<leader>fu', '<cmd>Telescope undo<cr>')
+    keymap.set('n', '<leader>fo', function() require("telescope").extensions.recent_files.pick(require('telescope.themes').get_dropdown()) end)
+    keymap.set('n', '<leader>fr', builtin.lsp_references, {})
+  end},
+  {'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' },
   -- {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
   --  "MunifTanjim/nui.nvim",
   'rcarriga/nvim-notify',
@@ -274,8 +407,11 @@ require('lazy').setup({
   {'machakann/vim-sandwich', config=function() vim.cmd('let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)') end},
   -- 'segeljakt/vim-silicon', -- not working with neovide
   -- {'krivahtoo/silicon.nvim', run = './install.sh build'}, -- chash on neovide
-  'mbbill/undotree',
-  'rbtnn/vim-ambiwidth',
+  -- 'mbbill/undotree',
+  {'rbtnn/vim-ambiwidth', config=function()
+    -- g.ambiwidth_add_list = {{0xe0b0, 0xe0b3, 1}} -- なんか動かん
+    -- fn.setcellwidths({{0xe0b0, 0xe0b1, 1}, {0xe0b2, 0xe0b3, 2}})
+  end},
   {'mfussenegger/nvim-lint', config=function()
     require('lint').linters_by_ft = {
       cpp = {'cpplint'}
@@ -291,10 +427,76 @@ require('lazy').setup({
     keymap.set('n', '<C-+>', ':ZoomIn<CR>')
     keymap.set('n', '<C-->', ':ZoomOut<CR>')
   end},
+  'tpope/vim-surround',
+  'vim-scripts/dbext.vim',
+  {'smartpde/telescope-recent-files', dependencies='telescope.nvim', config = function()
+    require('telescope').load_extension('recent_files')
+  end},
+  {'ErichDonGubler/lsp_lines.nvim', dependencies='nvim-lspconfig', config = function()
+    require('lsp_lines').setup({
+      icons = {
+        error = " ",
+        warning = " ",
+        info = " ",
+        hint = " "
+      }
+    })
+    vim.diagnostic.config({
+      virtual_text = false,
+    })
+  end},
+  {'rmagatti/auto-session', config=function()
+    require("auto-session").setup {
+      log_level = 'info',
+      auto_session_enabled = true,
+      auto_save_enabled = true,
+      auto_restore_enabled = false,
+      auto_session_create_enabled = false,
+      --[[
+      cwd_change_handling = {
+        restore_upcoming_session = true,
+        pre_cwd_changed_hook = nil,
+        post_cwd_changed_hook = nil,
+      },
+      ]]
+    }
+  end},
+  {'HiPhish/nvim-ts-rainbow2', dependencies={'iceberg.vim', 'nvim-treesitter'}, config=function()
+    -- TODO
+
+    api.nvim_create_autocmd('ColorScheme', {
+      callback=function()
+        -- vim.cmd('highlight! link TSRainbowRed Error')
+        vim.api.nvim_set_hl(0, "TSRainbowRed", { default=false, fg=g.terminal_color_1 })
+        vim.api.nvim_set_hl(0, "TSRainbowYellow", { default=false, fg = g.terminal_color_2 })
+        vim.api.nvim_set_hl(0, "TSRainbowBlue", { default=false, fg = g.terminal_color_3 })
+        vim.api.nvim_set_hl(0, "TSRainbowOrange", { default=false, fg = g.terminal_color_4  })
+        vim.api.nvim_set_hl(0, "TSRainbowGreen", { default=false, fg = g.terminal_color_5  })
+        vim.api.nvim_set_hl(0, "TSRainbowViolet", { default=false, fg = g.terminal_color_6 })
+        vim.api.nvim_set_hl(0, "TSRainbowCyan", { default=false, fg = g.terminal_color_7 })
+      end
+    })
+    -- vim.cmd('highlight! link TSRainbowYellow ')
+    -- vim.cmd('highlight link TSRainbowBlue Function')
+    -- vim.cmd('highlight! link TSRainbowOrange guifg='..g["terminal_color_6"]..'ctermfg=Orange')
+    -- vim.cmd('highlight! link TSRainbowGreen guifg='..g["terminal_color_2"]..'ctermfg=Green')
+    -- vim.cmd('highlight! link TSRainbowViolet guifg='..g["terminal_color_13"]..'ctermfg=Violet')
+    -- vim.cmd('highlight! link TSRainbowCyan guifg='..g["terminal_color_11"]..'ctermfg=Cyan')
+
+    --[[
+    api.nvim_set_hl(0, "TSRainbowRed", { fg = g.terminal_color_12 })
+    api.nvim_set_hl(0, "TSRainbowYellow", { fg = g.terminal_color_14 })
+    api.nvim_set_hl(0, "TSRainbowBlue", { fg = g.terminal_color_1 })
+    api.nvim_set_hl(0, "TSRainbowOrange", { fg = g.terminal_color_6 })
+    api.nvim_set_hl(0, "TSRainbowGreen", { fg = g.terminal_color_2 })
+    api.nvim_set_hl(0, "TSRainbowViolet", { fg = g.terminal_color_13 })
+    api.nvim_set_hl(0, "TSRainbowCyan", { fg = g.terminal_color_11 })
+    ]]
+  end},
 })
 
 -- require ('settings.ddc')
-require ('settings.lightline')
+-- require ('settings.lightline')
 -- require('settings.navic')
 
 require('settings.lsp')
@@ -312,6 +514,16 @@ end
 -- Fern
 g['fern#default_hidden']=1
 vim.cmd('command! Tree Fern . -drawer -reveal=%')
+vim.cmd([[
+function! s:init_fern() abort
+nmap <buffer> cd <Plug>(fern-action-cd)
+endfunction
+
+augroup fern-custom
+autocmd! *
+autocmd FileType fern call s:init_fern()
+augroup END
+]]);
 
 -- theme
 opt.background = 'dark'
@@ -331,7 +543,7 @@ require('settings.skk')
 
 --treesitter
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {'vim', 'lua', 'cpp'},
+  ensure_installed = 'all',
   sync_install = false,
   highlight = {
     enable = true,
@@ -339,8 +551,11 @@ require('nvim-treesitter.configs').setup {
   },
   rainbow = {
     enable = true,
-    extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-    max_file_lines = nil, -- Do not enable for files with more than n lines, int
+    query = 'rainbow-parens',
+    strategy = require('ts-rainbow').strategy.global,
+  },
+  indent = {
+    enable = true,
   },
   autotag = {
     enable = true
@@ -407,35 +622,6 @@ keymap.set('i', '<C-J>', 'copilot#Accept("<CR>")', {silent=true, expr=true, scri
 
 
 
-local actions_layout = require("telescope.actions.layout")
-local themes = require("telescope.themes")
-require("telescope").setup(themes.get_ivy({
-  defaults = {},
-}))
-require("telescope").setup(themes.get_ivy({
-  defaults = {
-    selection_caret = "  ",
-  },
-}))
--- require("telescope").load_extension("fzf")
---[[ require('telescope').setup({
-  defaults = {
-    layout_config = {
-      vertical = { width = 0.5 }
-    },
-  },
-  pickers = {
-    find_files = {
-      theme = "cursor",
-    }
-  },
-})]]
-
-local builtin = require('telescope.builtin')
-keymap.set('n', '<leader>ff', builtin.find_files, {})
-keymap.set('n', '<leader>fg', builtin.live_grep, {})
-keymap.set('n', '<leader>fb', builtin.buffers, {})
-keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
 --[[ require'nvim-web-devicons'.setup {
   override = {
@@ -576,7 +762,6 @@ require('silicon').setup({
 })
 ]]
 
-keymap.set('n', '<leader>u', ':UndotreeToggle<CR>')
 
 -- なんか確率的にエラーでるんだけど
 vim.g['fern#renderer']='nerdfont'

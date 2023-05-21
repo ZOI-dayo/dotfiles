@@ -71,3 +71,14 @@ navic.setup {
 vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
 
 require"fidget".setup{}
+
+require('lspconfig')['lua_ls'].setup {
+  settings = {
+    Lua = {
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+    },
+  },
+}
