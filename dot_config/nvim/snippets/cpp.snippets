@@ -1,0 +1,52 @@
+snippet graph_in
+	vector<vector<int>> ${1:graph}(${2:N});
+	for(int i=0; i<${3:M}; i++) {
+	  int u, v;
+	  cin >> u >> v;
+	  u--; v--;
+	  $1[u].push_back(v);
+	  $2[v].push_back(u);
+	}
+
+snippet dfs
+  vec<int> ${1:seen}(${2:N}, 0);
+	auto dfs = [&](auto fn, int index) -> pair<int, int> {
+	  seen[index] = 1;
+	  for (auto next : graph[index]) {
+	    if (seen[next])
+	      continue;
+	    auto next_result = fn(fn, next);
+	  }
+	  return result;
+	};
+
+snippet bfs
+	queue<int> ${1:q};
+	vector<int> ${2:visited}(${3:N}, 0);
+	$1.push(0);
+	$2[0] = 1;
+	while(!$1.empty()) {
+	  auto current = $1.front();
+	  $1.pop();
+	  for(auto next : ${4:graph}[current]) {
+	    if($2[next] != 0) continue;
+	    $2[next] = 1;
+	    $1.push(next);
+	  }
+	}
+
+snippet bfs_way
+	queue<pair<int, int>> ${1:q};
+	vector<int> ${2:way}(${3:N}, -1);
+	$1.push({0, 0});
+	$2[0] = 0;
+	while(!$1.empty()) {
+	  auto current = $1.front();
+	  $1.pop();
+	  for(auto next : ${4:graph}[current.F]) {
+	    if($2[next] >= 0) continue;
+	    $2[next] = current.S + 1;
+	    $1.push({next, current.S + 1});
+	  }
+	}
+

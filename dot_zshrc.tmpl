@@ -1,0 +1,189 @@
+{{ if (eq .chezmoi.hostname "zoi-m1-mba") }}
+# Fig pre block. Keep at the top of this file.
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
+{{ end }}
+
+# Show OS Data
+# screenfetch -D 'MacOSX'
+neofetch
+
+if type sheldon 1> /dev/null 2>&1; then
+  eval "$(sheldon source)"
+fi
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Mac Python
+# pip
+{{ if (eq .chezmoi.os "darwin") }}
+export PATH="$HOME/Library/Python/2.7/bin:$PATH"
+{{ end }}
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if type pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init --path)"
+fi
+
+# jenv
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+
+# apk
+{{ if (eq .chezmoi.hostname "zoi-m1-mba") }}
+export PATH=$PATH:/Users/zoi/Library/Android/sdk/platform-tools
+{{ end }}
+
+# DaVinci Resolve
+{{ if (eq .chezmoi.hostname "zoi-m1-mba") }}
+export RESOLVE_SCRIPT_API="/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/"
+export RESOLVE_SCRIPT_LIB="/Applications/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fusionscript.so"
+export PYTHONPATH="$PYTHONPATH:$RESOLVE_SCRIPT_API/Modules/"
+{{ end }}
+
+# Doc PATH
+
+{{ if (eq .chezmoi.os "darwin") }}
+export PATH="$HOME/Documents/PATH:$PATH"
+{{ end }}
+
+# GitHub Packages repo token
+eval "$(gh completion -s zsh)"
+
+# Get list of unused brew package
+alias brew-unused="brew list --formula | xargs -P7 -I{} sh -c 'brew uses --installed {} | wc -l | xargs printf \"%20s is used by %2d formulae.\\n\" {}' | grep ' 0 formulae'"
+
+# exa
+if type exa 1> /dev/null 2>&1; then
+  alias ls="exa --icons --group-directories-first"
+  alias l="exa --icons --all --group-directories-first"
+  alias ll="l --long --group"
+  alias tree="ll --tree --level=4 -I=.git --git-ignore"
+fi
+
+# lazygit
+alias lg="lazygit"
+
+# mpv
+alias mpv="mpv --vo=tct --really-quiet"
+
+# scrpy
+alias scrcpy="scrcpy -b 200M"
+
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+
+# yt-dlp
+alias yt-dlp="yt-dlp --config-location ~/.config/yt-dlp/config"
+alias youtube-dl=yt-dlp
+
+# NeoVim
+alias gnvim="goneovim"
+alias ngvim="gnvim"
+
+alias act="act --container-architecture linux/amd64 --artifact-server-path /tmp/artifacts"
+
+export QT_DIR=~/Qt
+export QT_VERSION=5.14.2
+export QT_API=5.13.0
+
+export GOPATH=~/go
+
+export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib"
+
+# nodenv
+export PATH="$HOME/.nodenv/bin:$PATH"
+eval "$(nodenv init -)"
+
+alias sed='gsed'
+
+eval "$(direnv hook zsh)"
+
+# AtCoder Compiler
+# alias      g++-atcoder='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g -Wall -Wextra -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG
+# alias g++-atcoder-fast='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g'
+alias oj-bundle='oj-bundle -I ~/src/github.com/ZOI-dayo/atcoder-library'
+function g++-atcoder() {
+compile_flags="`acc config-dir`/cpp/compile_flags.txt"
+if [ -f ./compile_flags.txt ]; then
+  compile_flags="./compile_flags.txt"
+fi
+gcc_args=`cat $compile_flags`
+if [ "$PRECOMPILE" -eq 1 ]; then
+  gcc_args=`echo "$gcc_args" | sed -e '/^-l.*/d'`
+fi
+bundled=${1%.cpp}.bundle.cpp
+rm -f $bundled
+oj-bundle "$1" > $bundled
+echo "$gcc_args" | xargs g++ "$bundled"
+# cat $compile_flags | xargs g++ "$@"
+}
+alias oj-test='g++-atcoder main.cpp && oj t -e 1e-6'
+alias acc-submit='acc s -s -- --no-open --yes'
+alias acc-check-submit='oj-test && acc-submit'
+
+function lldb-atcoder() {
+  tmppipe=$(mktemp -u)
+  mkfifo -m 600 "$tmppipe"
+  unbuffer -p lldb ./a.out < $tmppipe & (echo "b main\ninput test/sample-${1}.in\nr"; cat -u) > $tmppipe
+}
+
+# iTerm2
+alias chprof='(){echo -e "\033]1337;SetProfile=$1\a"}'
+alias otaku='chprof Otaku'
+
+image_list=($(ls -d ~/Documents/Image/StableDiffusion/*))
+image_count=$(ls -F ~/Documents/Image/StableDiffusion/ | grep -v / | wc -l | sed -e "s/ //g")
+image_index=1
+bg() {
+  if test $image_index -eq $image_count; then
+    image_index=1
+  else
+    image_index=$(( $image_index + 1 ))
+  fi
+  echo $image_count
+  image_path=$image_list[$image_index]
+  base64=$(echo "$image_path" | sed -e "s/ /\\\\ /g" | base64)
+  echo -ne "\033]1337;SetBackgroundImageFile=${base64}\a"
+}
+alias otaku-toggle=bg
+
+# deta.space
+export PATH="/Users/zoi/.detaspace/bin:$PATH"
+
+
+# ghq + peco
+function peco-src () {
+  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+  if [ -n "$selected_dir" ]; then
+    BUFFER="cd ${selected_dir}"
+    zle accept-line
+  fi
+  zle clear-screen
+}
+zle -N peco-src
+bindkey '^]' peco-src
+
+# crontab
+export EDITOR=nvim
+export VISUAL=nvim
+
+export PATH=$PATH:~/.local/bin/
+
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  autoload -Uz compinit
+  compinit
+fi
+
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+
+alias dotfiles="chezmoi"
+alias zsh_plugin="sheldon"
