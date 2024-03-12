@@ -187,3 +187,9 @@ export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
 alias dotfiles="chezmoi"
 alias zsh_plugin="sheldon"
+
+export PATH="/opt/homebrew/opt/openal-soft/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/openal-soft/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openal-soft/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/openal-soft/lib/pkgconfig"
+

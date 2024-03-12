@@ -61,9 +61,11 @@ opt.incsearch = true
 opt.wrapscan = true
 opt.hlsearch = true
 opt.relativenumber = true
+opt.signcolumn = 'yes'
+keymap.set('n', ';', '$', {silent=true})
 keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><ESC>', {remap = true})
 keymap.set('n', '  ', ':nohlsearch<CR><ESC>', {remap = true})
-opt.clipboard = 'unnamed'
+opt.clipboard = 'unnamedplus'
 api.nvim_create_autocmd('BufEnter', {
   group = api.nvim_create_augroup('AutoCommentOff', { clear = true }),
   command = 'setlocal formatoptions-=cro',
@@ -648,6 +650,7 @@ require('lazy').setup({
       {'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' },
       'marcuscaisey/olddirs.nvim',
       "nvim-telescope/telescope-frecency.nvim",
+      "nvim-telescope/telescope-file-browser.nvim",
       -- 'noice.nvim',
     },
     config = function()
@@ -709,6 +712,15 @@ require('lazy').setup({
                 vim.cmd('Tree')
               end,
             },
+            file_browser = {
+              theme = "ivy",
+              mappings = {
+                ["i"] = {
+                },
+                ["n"] = {
+                },
+              },
+            },
           }
         })
       )
@@ -717,6 +729,7 @@ require('lazy').setup({
       telescope.load_extension('recent_files')
       telescope.load_extension('olddirs')
       telescope.load_extension('frecency')
+      telescope.load_extension('file_browser')
       -- telescope.load_extension('noice')
 
       local builtin = require('telescope.builtin')
@@ -729,6 +742,7 @@ require('lazy').setup({
       keymap.set('n', '<leader>fr', builtin.lsp_references, {})
       keymap.set('n', '<leader>fd', function() telescope.extensions.olddirs.picker() end, {})
       keymap.set('n', '<leader>fd', '<Cmd>Telescope frecency<CR>', {})
+      keymap.set('n', '<leader>fn', '<Cmd>Telescope file_browser path=%:p:h<CR>', {})
       -- keymap.set('n', '<leader>fm', '<cmd>Telescope noice<cr>', {})
     end,
   },
@@ -1052,8 +1066,9 @@ require('lazy').setup({
         dashboard.button( "r", " > Recent"            , ":Telescope frecency<CR>"),
         dashboard.button( "d", " > Recent Directories", ":lua require('telescope').extensions.olddirs.picker()<CR>"),
         dashboard.button( "s", " > Sessions"          , ":Telescope session-lens search_session<CR>"),
-        dashboard.button( "f", " > Find file"         , ":cd $HOME/Documents | Telescope find_files<CR>"),
-        dashboard.button( "c", " > Configs"           , ":execute('cd ' . fnamemodify($MYVIMRC, ':h')) | :e $MYVIMRC<CR>"),
+        dashboard.button( "f", " > Find file"         , ":cd $HOME | Telescope file_browser<CR>"),
+        -- dashboard.button( "c", " > Configs"           , ":execute('cd ' . fnamemodify($MYVIMRC, ':h')) | :e $MYVIMRC<CR>"),
+        dashboard.button( "c", " > Configs"           , ":let _chezmoi_path = execute(':!chezmoi source-path', 'silent!')->split('\\n')[2] | execute(':cd ' . _chezmoi_path . '/dot_config/nvim/') | e init.lua<CR>"),
         dashboard.button( "q", " > Quit NVIM"         , ":qa<CR>"),
       }
       alpha.setup(dashboard.opts)
