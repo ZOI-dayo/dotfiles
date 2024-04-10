@@ -127,6 +127,17 @@ alias oj-test='g++-atcoder main.cpp && oj t -e 1e-6'
 alias acc-submit='acc s -s -- --no-open --yes'
 alias acc-check-submit='oj-test && acc-submit'
 
+function acc-new() {
+  cd ~/Documents/AtCoder
+  if [ $# -eq 1 ]; then
+    acc new $1
+    cd $1
+  elif [ $# -eq 2 ]; then
+    acc new $1 -c inquire -f
+    cd $1/$2
+  fi
+}
+
 function lldb-atcoder() {
   tmppipe=$(mktemp -u)
   mkfifo -m 600 "$tmppipe"
