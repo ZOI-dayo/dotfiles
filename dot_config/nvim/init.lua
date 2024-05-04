@@ -233,7 +233,7 @@ require('lazy').setup({
           icons_enabled = true,
           -- theme = 'iceberg',
           component_separators = { left = '', right = ''},
-          section_separators = { left = '', right = ''},
+          section_separators = { left = '󾂰', right = '󾂲'},
           disabled_filetypes = {
             statusline = {},
             winbar = {},
