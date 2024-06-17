@@ -413,6 +413,24 @@ require('lazy').setup({
       })
     end
   },
+  {
+    'mfussenegger/nvim-dap'
+  },
+  {
+    'nvim-neotest/nvim-nio'
+  },
+  {
+    'rcarriga/nvim-dap-ui'
+  },
+  {
+    'leoluz/nvim-dap-go',
+    config = function()
+      require('dap-go').setup()
+    end
+  },
+  {
+    'mfussenegger/nvim-dap',
+  },
   -- {'j-hui/fidget.nvim', dependencies = 'nvim-lspconfig', config = function() require'fidget'.setup{} end},
 
   {
@@ -1116,7 +1134,7 @@ require('lazy').setup({
       'MunifTanjim/nui.nvim'
     },
     config = function() 
-      api.nvim_set_keymap('n', '<CR>', '<cmd>FineCmdline<CR>', {noremap = true})
+      -- api.nvim_set_keymap('n', '<CR>', '<cmd>FineCmdline<CR>', {noremap = true})
       -- api.nvim_set_keymap('n', ':', '<cmd>FineCmdline<CR>', {noremap = true})
     end
   },
@@ -1125,6 +1143,25 @@ require('lazy').setup({
     config = function()
       require'notifier'.setup({})
     end
+  },
+  {
+    'sakhnik/nvim-gdb',
+    config = function()
+      vim.g['nvimgdb_config_override'] = {
+        sign_current_line = '>',
+        sign_breakpoint = { '*', '#' },
+      }
+    end
+  },
+  {
+    'skywind3000/asynctasks.vim',
+    config = function()
+      api.nvim_set_keymap('n', '<Leader>tb', '<cmd>AsyncTask build<CR>', {noremap = true})
+      api.nvim_set_keymap('n', '<Leader>tr', '<cmd>AsyncTask run<CR>', {noremap = true})
+    end
+  },
+  {
+    'skywind3000/asyncrun.vim',
   },
 })
 

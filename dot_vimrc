@@ -232,3 +232,6 @@ call skkeleton#config({
       \ 'globalJisyo': '~/.skk/SKK-JISYO.L',
       \ 'registerConvertResult': v:true
       \})
+
+" asdf
+. /opt/asdf-vm/asdf.sh

@@ -9,7 +9,19 @@ neofetch
 
 if type sheldon 1> /dev/null 2>&1; then
   eval "$(sheldon source)"
+
+  bindkey               '^I' menu-select
+  bindkey -M menuselect '^I' menu-complete
 fi
+
+
+export HISTFILE=${HOME}/.zsh_history
+export HISTSIZE=1000
+export SAVEHIST=100000
+setopt hist_ignore_dups
+setopt EXTENDED_HISTORY
+setopt hist_reduce_blanks
+setopt inc_append_history
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -93,8 +105,10 @@ export QT_API=5.13.0
 
 export GOPATH=~/go
 
+{{ if (eq .chezmoi.hostname "zoi-m1-mba") }}
 export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
 export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib"
+{{ end }}
 
 # nodenv
 export PATH="$HOME/.nodenv/bin:$PATH"
@@ -114,19 +128,31 @@ alias oj-bundle='oj-bundle -I ~/src/github.com/ZOI-dayo/atcoder-library'
 alias oj-bundle='oj-bundle -I ~/ghq/github.com/ZOI-dayo/atcoder-library'
 {{ end }}
 function g++-atcoder() {
+bundled=${1%.cpp}.bundle.cpp
+echo "Bundling $1 to $bundled"
+source_time=`date -r "$1" '+%s'`
+echo "Source time: $source_time"
+bundled_time=`date -r "$bundled" '+%s'`
+echo "Bundled time: $bundled_time"
+diff_time=`expr $bundled_time - $source_time`
+echo "Diff time: $diff_time"
+if [ $diff_time -gt 0 ]; then
+  echo "Skip building"
+else
 compile_flags="`acc config-dir`/cpp/compile_flags.txt"
 if [ -f ./compile_flags.txt ]; then
+  echo "Using local compile_flags.txt"
   compile_flags="./compile_flags.txt"
 fi
 gcc_args=`cat $compile_flags`
 if [ "$PRECOMPILE" -eq 1 ]; then
   gcc_args=`echo "$gcc_args" | sed -e '/^-l.*/d'`
 fi
-bundled=${1%.cpp}.bundle.cpp
 rm -f $bundled
 oj-bundle "$1" > $bundled
 echo "$gcc_args" | xargs g++ "$bundled"
 # cat $compile_flags | xargs g++ "$@"
+fi
 }
 alias oj-test='g++-atcoder main.cpp && oj t -e 1e-6'
 alias acc-submit='acc s -s -- --no-open --yes'
@@ -178,17 +204,17 @@ alias otaku-toggle=bg
 export PATH="/Users/zoi/.detaspace/bin:$PATH"
 
 
-# ghq + peco
-function peco-src () {
-  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+# ghq + fzf
+function fzf-src () {
+  local selected_dir=$(ghq list -p | fzf)
   if [ -n "$selected_dir" ]; then
     BUFFER="cd ${selected_dir}"
     zle accept-line
   fi
   zle clear-screen
 }
-zle -N peco-src
-bindkey '^]' peco-src
+zle -N fzf-src
+bindkey '^]' fzf-src
 
 # crontab
 export EDITOR=nvim
@@ -216,5 +242,7 @@ export CPPFLAGS="-I/opt/homebrew/opt/openal-soft/include"
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openal-soft/lib/pkgconfig"
 {{ end }}
 
-export PATH="$HOME/.anyenv/bin:$PATH"
-eval "$(anyenv init -)"
+## export PATH="$HOME/.anyenv/bin:$PATH"
+## eval "$(anyenv init -)"
+
+. /opt/asdf-vm/asdf.sh
