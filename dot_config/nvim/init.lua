@@ -233,7 +233,7 @@ require('lazy').setup({
           icons_enabled = true,
           -- theme = 'iceberg',
           component_separators = { left = '', right = ''},
-          section_separators = { left = '󾂰', right = '󾂲'},
+          section_separators = { left = '', right = ''},
           disabled_filetypes = {
             statusline = {},
             winbar = {},
@@ -794,7 +794,7 @@ require('lazy').setup({
     })
   end},
   ]]
-  'rbtnn/vim-ambiwidth',
+  -- 'rbtnn/vim-ambiwidth',
   {
     'mfussenegger/nvim-lint',
     config = function()

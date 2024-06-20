@@ -5,7 +5,8 @@
 
 # Show OS Data
 # screenfetch -D 'MacOSX'
-neofetch
+
+# neofetch
 
 if type sheldon 1> /dev/null 2>&1; then
   eval "$(sheldon source)"
@@ -40,8 +41,8 @@ if type pyenv 1>/dev/null 2>&1; then
 fi
 
 # jenv
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
+## export PATH="$HOME/.jenv/bin:$PATH"
+## eval "$(jenv init -)"
 
 # apk
 {{ if (eq .chezmoi.hostname "zoi-m1-mba") }}
@@ -62,7 +63,9 @@ export PATH="$HOME/Documents/PATH:$PATH"
 {{ end }}
 
 # GitHub Packages repo token
-eval "$(gh completion -s zsh)"
+if type gh 1> /dev/null 2>&1; then
+  eval "$(gh completion -s zsh)"
+fi
 
 # Get list of unused brew package
 alias brew-unused="brew list --formula | xargs -P7 -I{} sh -c 'brew uses --installed {} | wc -l | xargs printf \"%20s is used by %2d formulae.\\n\" {}' | grep ' 0 formulae'"
@@ -111,12 +114,18 @@ export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/l
 {{ end }}
 
 # nodenv
-export PATH="$HOME/.nodenv/bin:$PATH"
-eval "$(nodenv init -)"
+if type nodenv 1> /dev/null 2>&1; then
+  export PATH="$HOME/.nodenv/bin:$PATH"
+  eval "$(nodenv init -)"
+fi
 
+{{ if (eq .chezmoi.hostname "zoi-m1-mba") }}
 alias sed='gsed'
+{{ end }}
 
-eval "$(direnv hook zsh)"
+if type direnv 1> /dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
 
 # AtCoder Compiler
 # alias      g++-atcoder='g++ -I ~/Documents/AtCoder/include -I /opt/homebrew/include -std=gnu++17 -O0 -g -Wall -Wextra -ftrapv -fstack-protector-all -fno-omit-frame-pointer -D_FORTIFY_SOURCE=2 -D_GLIBCXX_DEBUG
@@ -180,26 +189,6 @@ function lldb-atcoder() {
   unbuffer -p lldb ./a.out < $tmppipe & (echo "b main\ninput test/sample-${1}.in\nr"; cat -u) > $tmppipe
 }
 
-# iTerm2
-alias chprof='(){echo -e "\033]1337;SetProfile=$1\a"}'
-alias otaku='chprof Otaku'
-
-image_list=($(ls -d ~/Documents/Image/StableDiffusion/*))
-image_count=$(ls -F ~/Documents/Image/StableDiffusion/ | grep -v / | wc -l | sed -e "s/ //g")
-image_index=1
-bg() {
-  if test $image_index -eq $image_count; then
-    image_index=1
-  else
-    image_index=$(( $image_index + 1 ))
-  fi
-  echo $image_count
-  image_path=$image_list[$image_index]
-  base64=$(echo "$image_path" | sed -e "s/ /\\\\ /g" | base64)
-  echo -ne "\033]1337;SetBackgroundImageFile=${base64}\a"
-}
-alias otaku-toggle=bg
-
 # deta.space
 export PATH="/Users/zoi/.detaspace/bin:$PATH"
 
@@ -230,7 +219,10 @@ fi
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+
+{{ if (eq .chezmoi.os "darwin") }}
 export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+{{ end }}
 
 alias dotfiles="chezmoi"
 alias zsh_plugin="sheldon"
