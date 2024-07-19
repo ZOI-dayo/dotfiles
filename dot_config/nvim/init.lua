@@ -27,6 +27,8 @@ g.loaded_netrwPlugin = 1
 g.loaded_netrwSettings = 1
 g.loaded_netrwFileHandlers = 1
 ]]
+g.loaded_netrw = 1
+g.loaded_netrwPlugin = 1
 
 g.mapleader = "\\"
 opt.fenc = 'utf-8'
@@ -195,16 +197,16 @@ require('lazy').setup({
       'nvim-web-devicons',
       -- 'iceberg.vim',
       'nightfox.nvim',
-      'eskk.vim',
+      -- 'eskk.vim',
     },
     config = function()
-      local function eskk()
-        if(api.nvim_get_mode().mode == 'i' and fn['eskk#is_enabled']() == 1) then
-          return fn['eskk#statusline']()
-        else
-          return ''
-        end
-      end
+      -- local function eskk()
+      --   if(api.nvim_get_mode().mode == 'i' and fn['eskk#is_enabled']() == 1) then
+      --     return fn['eskk#statusline']()
+      --   else
+      --     return ''
+      --   end
+      -- end
       local custom_fname = require('lualine.components.filename'):extend()
       local highlight = require'lualine.highlight'
       local default_status_colors = { saved = '#228B22', modified = '#C70039' }
@@ -248,7 +250,8 @@ require('lazy').setup({
           }
         },
         sections = {
-          lualine_a = {'mode', eskk},
+          -- lualine_a = {'mode', eskk},
+          lualine_a = {'mode'},
           lualine_b = {'branch', 'diff', 'diagnostics'},
           lualine_c = {'filename'},
           lualine_x = {'encoding', 'fileformat', 'filesize', 'filetype'},
@@ -354,12 +357,12 @@ require('lazy').setup({
               vim.api.nvim_create_augroup("lsp_augroup", { clear = true })
               vim.api.nvim_create_autocmd("InsertEnter", {
                 buffer = bufnr,
-                callback = function() vim.lsp.inlay_hint.enable(bufnr, true) end,
+                callback = function() vim.lsp.inlay_hint.enable(true) end,
                 group = "lsp_augroup",
               })
               vim.api.nvim_create_autocmd("InsertLeave", {
                 buffer = bufnr,
-                callback = function() vim.lsp.inlay_hint.enable(bufnr, false) end,
+                callback = function() vim.lsp.inlay_hint.enable(false) end,
                 group = "lsp_augroup",
               })
             end
@@ -557,27 +560,27 @@ require('lazy').setup({
   },
   --'hrsh7th/vim-vsnip',
   --'hrsh7th/vim-vsnip-integ',
-  {
-    'vim-skk/eskk.vim',
-    config = function()
-      vim.g['eskk#directory'] = '~/.skk'
-      vim.g['eskk#large_dictionary'] = {
-        path = '~/.skk/SKK-JISYO.L',
-        sorted = 1,
-        encoding = 'euc-jp',
-      }
-      api.nvim_create_autocmd('VimEnter', {
-
-        callback = function()
-          keymap.set({'i','c'}, 'jk', '<Plug>(eskk:toggle)')
-        end
-      })
-      --[[
-      vim.cmd('autocmd VimEnter * imap jk <Plug>(eskk:toggle)')
-      vim.cmd('autocmd VimEnter * cmap jk <Plug>(eskk:toggle)')
-      ]]
-    end,
-  },
+  -- {
+  --   'vim-skk/eskk.vim',
+  --   config = function()
+  --     vim.g['eskk#directory'] = '~/.skk'
+  --     vim.g['eskk#large_dictionary'] = {
+  --       path = '~/.skk/SKK-JISYO.L',
+  --       sorted = 1,
+  --       encoding = 'euc-jp',
+  --     }
+  --     api.nvim_create_autocmd('VimEnter', {
+  --
+  --       callback = function()
+  --         keymap.set({'i','c'}, 'jk', '<Plug>(eskk:toggle)')
+  --       end
+  --     })
+  --     --[[
+  --     vim.cmd('autocmd VimEnter * imap jk <Plug>(eskk:toggle)')
+  --     vim.cmd('autocmd VimEnter * cmap jk <Plug>(eskk:toggle)')
+  --     ]]
+  --   end,
+  -- },
   {
     'nvim-treesitter/nvim-treesitter',
     -- dependencies = 'nvim-ts-rainbow2',
@@ -635,7 +638,8 @@ require('lazy').setup({
   {
     'zbirenbaum/copilot.lua',
     cmd = 'Copilot',
-    event = 'InsertEnter',
+    -- event = 'InsertEnter',
+    event = 'BufEnter',
     config = function()
       -- issue #273のためソースが編集されています
       require("copilot").setup({
@@ -665,11 +669,9 @@ require('lazy').setup({
       'nvim-lua/plenary.nvim',
       'debugloop/telescope-undo.nvim',
       {'smartpde/telescope-recent-files'},
-      {'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' },
       'marcuscaisey/olddirs.nvim',
       "nvim-telescope/telescope-frecency.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
-      -- 'noice.nvim',
     },
     config = function()
       local themes = require("telescope.themes")
@@ -694,12 +696,6 @@ require('lazy').setup({
                   ["<C-cr>"] = require("telescope-undo.actions").restore,
                 },
               },
-            },
-            fzf = {
-              fuzzy = true,
-              override_generic_sorter = false,
-              override_file_sorter = true,
-              case_mode = "smart_case",
             },
             recent_files = {
               attach_mappings = function(prompt_bufnr, _)
@@ -743,7 +739,6 @@ require('lazy').setup({
         })
       )
       telescope.load_extension('undo')
-      telescope.load_extension('fzf')
       telescope.load_extension('recent_files')
       telescope.load_extension('olddirs')
       telescope.load_extension('frecency')
@@ -769,6 +764,7 @@ require('lazy').setup({
     lazy = true,
     cmd = 'StartupTime',
   },
+  --[[
   {
     'andweeb/presence.nvim',
     opts = {
@@ -782,6 +778,7 @@ require('lazy').setup({
       line_number_text    = "%s/%s行目にいます",
     },
   },
+  ]]
   {'machakann/vim-sandwich', config=function() g['sandwich#recipes'] = fn.deepcopy(g['sandwich#default_recipes']) end},
   'segeljakt/vim-silicon',
   --[[ {
@@ -904,6 +901,9 @@ require('lazy').setup({
     config = function()
       api.nvim_create_user_command('Tree', ':NvimTreeOpen', {})
       require("nvim-tree").setup {
+        renderer = {
+          highlight_opened_files = true,
+        },
         -- renderer = {
         update_focused_file = {
           enable = true,
@@ -918,8 +918,8 @@ require('lazy').setup({
       }
       api.nvim_set_hl(0, 'NvimTreeNormal', { link = 'Normal' })
     end,
-    lazy = true,
-    cmd = 'Tree',
+    -- lazy = true,
+    -- cmd = 'Tree',
   },
   {
     'EdenEast/nightfox.nvim',
@@ -954,14 +954,18 @@ require('lazy').setup({
   {
     'numToStr/Comment.nvim',
     config = function()
+      keymap.set('n', '<C-_>', '<ESC><CMD>lua require("Comment.api").toggle.linewise.current()<CR>')
+      keymap.set('n', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle.linewise.current()<CR>')
+      keymap.set('v', '<C-_>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>')
+      keymap.set('v', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>')
       require('Comment').setup({
         toggler = {
-          line = '<C-/>',
-          block = '<C-S-/>',
+          --[[ line = '<C-/>', ]]
+          --[[ block = '<C-S-/>', ]]
         },
         opleader = {
-          line = 'cc',
-          block = 'cb',
+          --[[ line = 'cc', ]]
+          --[[ block = 'cb', ]]
         },
       })
     end
@@ -1162,6 +1166,11 @@ require('lazy').setup({
   },
   {
     'skywind3000/asyncrun.vim',
+  },
+  {
+    'windwp/nvim-autopairs',
+    event = "InsertEnter",
+    config = true
   },
 })
 
