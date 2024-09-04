@@ -40,13 +40,13 @@ opt.showcmd = true
 opt.helplang = 'ja'
 opt.number = true
 opt.numberwidth = 3
--- opt.cursorline = true
+opt.cursorline = true
 opt.virtualedit = 'onemore'
 opt.smartindent = true
 opt.visualbell = true
 opt.showmatch = true
-opt.laststatus = 3
--- opt.laststatus = 2
+-- opt.laststatus = 3
+opt.laststatus = 2
 opt.wildmode = 'list:longest'
 keymap.set('n', 'j', 'gj', {silent=true})
 keymap.set('n', 'k', 'gk', {silent=true})
@@ -62,12 +62,12 @@ opt.smartcase = true
 opt.incsearch = true
 opt.wrapscan = true
 opt.hlsearch = true
-opt.relativenumber = true
+-- opt.relativenumber = true
 opt.signcolumn = 'yes'
 keymap.set('n', ';', '$', {silent=true})
 keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><ESC>', {remap = true})
 keymap.set('n', '  ', ':nohlsearch<CR><ESC>', {remap = true})
-opt.clipboard = 'unnamedplus'
+-- opt.clipboard = 'unnamedplus'
 api.nvim_create_autocmd('BufEnter', {
   group = api.nvim_create_augroup('AutoCommentOff', { clear = true }),
   command = 'setlocal formatoptions-=cro',
@@ -242,7 +242,7 @@ require('lazy').setup({
           },
           ignore_focus = {},
           always_divide_middle = true,
-          globalstatus = true,
+          -- globalstatus = true,
           refresh = {
             statusline = 1000,
             tabline = 1000,
@@ -261,7 +261,7 @@ require('lazy').setup({
         inactive_sections = {
           lualine_a = {},
           lualine_b = {},
-          lualine_c = {'filename', custom_fname},
+          lualine_c = {'filename'},
           lualine_x = {'location'},
           lualine_y = {},
           lualine_z = {}
@@ -991,7 +991,7 @@ require('lazy').setup({
   {'sunjon/shade.nvim',
     config = function()
       require'shade'.setup({
-        overlay_opacity = 65,
+        overlay_opacity = 50,
         opacity_step = 1,
         keys = {
           brightness_up    = '<C-Up>',
@@ -1172,6 +1172,7 @@ require('lazy').setup({
     event = "InsertEnter",
     config = true
   },
+  { 'wakatime/vim-wakatime', lazy = false },
 })
 
 keymap.set('t', '<ESC>', [[<C-\><C-n>]], {silent=true})
